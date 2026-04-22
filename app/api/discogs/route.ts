@@ -10,6 +10,9 @@ import { readCache, writeCache } from '@/app/lib/cache';
 import { DiscogsCacheData } from '@/app/types/cache';
 import { RecordItem } from '@/app/types/collection';
 
+import { buildOAuthHeader } from '@/app/lib/discogs-oauth';
+import { getAuth } from '@/app/lib/auth';
+
 function buildDiscogsUrl(path: string, params?: Record<string, string | number>) {
   const baseUrl = process.env.DISCOGS_API_URL;
 
@@ -33,22 +36,104 @@ export async function GET(request: Request) {
   const folderName = searchParams.get('folder') || 'CR';
   const refresh = searchParams.get('refresh') === 'true';
 
-  const token = process.env.DISCOGS_USER_TOKEN;
-  const username = process.env.DISCOGS_USER_NAME;
+  const auth = await getAuth();
 
-  if (!token) {
-    return NextResponse.json({ error: 'Missing DISCOGS_USER_TOKEN in .env.local' }, { status: 500 });
+  const isIdentityRequest = searchParams.get('identity') === 'true';
+
+  if (isIdentityRequest && !auth) {
+    return NextResponse.json({
+      username: null,
+      name: null,
+      avatar_url: null,
+    });
   }
 
-  if (!username) {
-    return NextResponse.json({ error: 'Missing DISCOGS_USER_NAME in .env.local' }, { status: 500 });
+  if (!auth) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const { token, secret: tokenSecret } = auth;
+
+  const consumerKey = process.env.DISCOGS_CONSUMER_KEY!;
+  const consumerSecret = process.env.DISCOGS_CONSUMER_SECRET!;
+
+  if (!consumerKey || !consumerSecret) {
+    return NextResponse.json({ error: 'Missing OAuth consumer keys in .env.local' }, { status: 500 });
+  }
+
+  async function fetchIdentity(auth: { token: string; secret: string }) {
+    const identityUrl = buildDiscogsUrl('oauth/identity');
+
+    const identityRes = await fetch(identityUrl, {
+      headers: {
+        Authorization: buildOAuthHeader({
+          method: 'GET',
+          url: identityUrl,
+          consumerKey,
+          consumerSecret,
+          token: auth.token,
+          tokenSecret: auth.secret,
+        }),
+      },
+    });
+
+    if (!identityRes.ok) {
+      throw new Error(`Identity request failed: ${identityRes.status}`);
+    }
+
+    const identityData = await identityRes.json();
+
+    const profileUrl = buildDiscogsUrl(`users/${identityData.username}`);
+
+    const profileRes = await fetch(profileUrl, {
+      headers: {
+        Authorization: buildOAuthHeader({
+          method: 'GET',
+          url: profileUrl,
+          consumerKey,
+          consumerSecret,
+          token: auth.token,
+          tokenSecret: auth.secret,
+        }),
+      },
+    });
+
+    if (!profileRes.ok) {
+      throw new Error(`Profile request failed: ${profileRes.status}`);
+    }
+
+    const profileData = await profileRes.json();
+
+    return {
+      username: identityData.username,
+      name: profileData.name,
+      avatar_url: profileData.avatar_url,
+    };
+  }
+
+  if (searchParams.get('identity') === 'true') {
+    const identity = await fetchIdentity(auth);
+
+    return NextResponse.json(identity);
   }
 
   try {
+    const identity = await fetchIdentity(auth);
+    const username = identity.username;
+
     // --- 1. Folders holen ---
-    const foldersRes = await fetch(buildDiscogsUrl(`users/${username}/collection/folders`), {
+    const foldersUrl = buildDiscogsUrl(`users/${username}/collection/folders`);
+
+    const foldersRes = await fetch(foldersUrl, {
       headers: {
-        Authorization: `Discogs token=${token}`,
+        Authorization: buildOAuthHeader({
+          method: 'GET',
+          url: foldersUrl,
+          consumerKey,
+          consumerSecret,
+          token,
+          tokenSecret,
+        }),
       },
     });
 
@@ -79,14 +164,23 @@ export async function GET(request: Request) {
     let allReleases: DiscogsReleaseItem[] = [];
 
     do {
-      const releasesRes = await fetch(
-        buildDiscogsUrl(`users/${username}/collection/folders/${selectedFolder.id}/releases`, { per_page: 100, page }),
-        {
-          headers: {
-            Authorization: `Discogs token=${token}`,
-          },
-        }
-      );
+      const releasesUrl = buildDiscogsUrl(`users/${username}/collection/folders/${selectedFolder.id}/releases`, {
+        per_page: 100,
+        page,
+      });
+
+      const releasesRes = await fetch(releasesUrl, {
+        headers: {
+          Authorization: buildOAuthHeader({
+            method: 'GET',
+            url: releasesUrl,
+            consumerKey,
+            consumerSecret,
+            token,
+            tokenSecret,
+          }),
+        },
+      });
 
       if (!releasesRes.ok) {
         throw new Error(`Releases request failed: ${releasesRes.status}`);
