@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { buildOAuthHeader } from '@/app/lib/discogs-oauth';
+import { buildOAuthHeader } from '@/app/lib/discogsOauth';
 
 export async function GET() {
   const consumerKey = process.env.DISCOGS_CONSUMER_KEY!;

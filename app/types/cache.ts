@@ -1,7 +1,6 @@
-import { RecordItem } from './collection';
-import { DiscogsFolder } from './discogs';
+import { DiscogsFolder, DiscogsReleaseItem } from './discogs';
 
 export type DiscogsCacheData = {
   folders: DiscogsFolder[];
-  records: RecordItem[];
+  releases: DiscogsReleaseItem[];
 };

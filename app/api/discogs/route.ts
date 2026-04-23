@@ -1,5 +1,4 @@
 import {
-  DiscogsArtist,
   DiscogsReleaseItem,
   DiscogsReleasesResponse,
   DiscogsFolder,
@@ -8,9 +7,9 @@ import {
 import { NextResponse } from 'next/server';
 import { readCache, writeCache } from '@/app/lib/cache';
 import { DiscogsCacheData } from '@/app/types/cache';
-import { RecordItem } from '@/app/types/collection';
 
-import { buildOAuthHeader } from '@/app/lib/discogs-oauth';
+import { buildOAuthHeader } from '@/app/lib/discogsOauth';
+import { adaptCollectionReleases } from '@/app/lib/collectionAdapter';
 import { getAuth } from '@/app/lib/auth';
 
 function buildDiscogsUrl(path: string, params?: Record<string, string | number>) {
@@ -29,6 +28,14 @@ function buildDiscogsUrl(path: string, params?: Record<string, string | number>)
   }
 
   return url.toString();
+}
+
+function hasUsableCache(data: DiscogsCacheData | null) {
+  if (!data) {
+    return false;
+  }
+
+  return Array.isArray(data.folders) && Array.isArray(data.releases);
 }
 
 export async function GET(request: Request) {
@@ -153,8 +160,12 @@ export async function GET(request: Request) {
     if (!refresh) {
       const cached = await readCache(username, folderName);
 
-      if (cached) {
-        return NextResponse.json(cached);
+      if (hasUsableCache(cached)) {
+        return NextResponse.json({
+          folders: cached.folders,
+          releases: cached.releases,
+          collectionOverviewRows: adaptCollectionReleases(cached.releases, 'collectionOverview'),
+        });
       }
     }
 
@@ -188,6 +199,20 @@ export async function GET(request: Request) {
 
       const releasesData: DiscogsReleasesResponse = await releasesRes.json();
 
+      // console.log(
+      //   '[discogs] folder releases raw response',
+      //   JSON.stringify(
+      //     {
+      //       folder: folderName,
+      //       page,
+      //       totalPages: releasesData.pagination.pages,
+      //       sample: releasesData.releases.slice(0, 3),
+      //     },
+      //     null,
+      //     2
+      //   )
+      // );
+
       allReleases = allReleases.concat(releasesData.releases);
 
       totalPages = releasesData.pagination.pages;
@@ -197,26 +222,17 @@ export async function GET(request: Request) {
       if (page > 50) break;
     } while (page <= totalPages);
 
-    const mapped: RecordItem[] = allReleases.map((item: DiscogsReleaseItem): RecordItem => {
-      const r = item.basic_information;
-
-      return {
-        id: r.id,
-        title: r.title ?? 'Unknown Title',
-        artist: r.artists?.map((a: DiscogsArtist) => a.name).join(', ') ?? 'Unknown Artist',
-        year: r.year ?? null,
-        cover: r.cover_image ?? null,
-      };
-    });
-
     const responseData: DiscogsCacheData = {
       folders: foldersData.folders,
-      records: mapped,
+      releases: allReleases,
     };
 
     await writeCache(username, folderName, responseData);
 
-    return NextResponse.json(responseData);
+    return NextResponse.json({
+      ...responseData,
+      collectionOverviewRows: adaptCollectionReleases(allReleases, 'collectionOverview'),
+    });
   } catch (err) {
     console.error('Discogs API error:', err);
 

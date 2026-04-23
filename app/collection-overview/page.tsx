@@ -1,17 +1,26 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { RecordItem } from '../types/collection';
+import { CollectionOverviewRow } from '../types/collection';
 
+import Rating from '@mui/material/Rating';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import Image from 'next/image';
 
+import { DEFAULT_COLUMN_VISIBILITY } from '../lib/collectionColumns';
+import { formatDiscogsDate } from '../lib/formatUtils';
 import { useCollectionStore } from '../store/useCollectionStore';
 
 export default function HomePage() {
-  const [records, setRecords] = useState<RecordItem[]>([]);
+  const [rows, setRows] = useState<CollectionOverviewRow[]>([]);
 
   // resolves hidration problems
   const selectedFolder = useCollectionStore((s) => s.selectedFolder);
+  const refreshVersion = useCollectionStore((s) => s.refreshVersion);
+  const setIsLoading = useCollectionStore((s) => s.setIsLoading);
+  const setIsRefreshing = useCollectionStore((s) => s.setIsRefreshing);
+  const markFolderCached = useCollectionStore((s) => s.markFolderCached);
+  const columnVisibilityModel = useCollectionStore((s) => s.columnVisibilityModel);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,16 +33,52 @@ export default function HomePage() {
       sortable: false,
       renderCell: (params) =>
         params.value ? (
-          <img
-            src={params.value as string}
-            alt="cover"
-            width={50}
-          />
+          <div style={{ position: 'relative', width: 50, height: 50 }}>
+            <Image
+              src={params.value as string}
+              alt="cover"
+              fill
+              sizes="50px"
+              style={{ objectFit: 'contain' }}
+            />
+          </div>
         ) : null,
     },
     { field: 'artist', headerName: 'Artist', flex: 1 },
-    { field: 'title', headerName: 'Title', flex: 1 },
+    { field: 'displayTitle', headerName: 'Title', flex: 1 },
     { field: 'year', headerName: 'Year', width: 120 },
+    { field: 'formats', headerName: 'Formats', flex: 1.2 },
+    { field: 'labels', headerName: 'Labels', flex: 1.2 },
+    { field: 'genres', headerName: 'Genres', flex: 1 },
+    { field: 'styles', headerName: 'Styles', flex: 1.2 },
+    {
+      field: 'dateAdded',
+      headerName: 'Added',
+      width: 180,
+      valueFormatter: (value) => formatDiscogsDate((value as string) ?? ''),
+    },
+    {
+      field: 'rating',
+      headerName: 'Rating',
+      width: 150,
+      sortComparator: (v1, v2) => (v1 ?? -1) - (v2 ?? -1),
+      renderCell: (params) => {
+        const value = params.value as number | null | undefined;
+
+        if (value == null) {
+          return <span>-</span>;
+        }
+
+        return (
+          <Rating
+            value={value}
+            max={5}
+            readOnly
+            size="small"
+          />
+        );
+      },
+    },
   ];
 
   useEffect(() => {
@@ -42,6 +87,7 @@ export default function HomePage() {
     }
     const fetchData = async () => {
       setLoading(true);
+      setIsLoading(true);
 
       try {
         const res = await fetch(`/api/discogs?folder=${selectedFolder}`);
@@ -52,19 +98,22 @@ export default function HomePage() {
           throw new Error(data.error || 'Unknown error');
         }
 
-        setRecords(data.records);
+        setRows(data.collectionOverviewRows);
+        markFolderCached(selectedFolder);
         setError(null);
       } catch (err) {
         console.error(err);
         setError(err instanceof Error ? err.message : 'Unknown error');
-        setRecords([]);
+        setRows([]);
       } finally {
         setLoading(false);
+        setIsLoading(false);
+        setIsRefreshing(false);
       }
     };
 
     fetchData();
-  }, [selectedFolder]);
+  }, [selectedFolder, refreshVersion, markFolderCached, setIsLoading, setIsRefreshing]);
 
   if (error) {
     return (
@@ -77,14 +126,15 @@ export default function HomePage() {
 
   return (
     <div className="h-full">
-      {selectedFolder && records.length === 0 && !loading && <p>No records found</p>}
+      {selectedFolder && rows.length === 0 && !loading && <p>No records found</p>}
 
       <main className="h-full">
         <div style={{ height: '100%', width: '100%' }}>
           <DataGrid
-            rows={records}
+            rows={rows}
             columns={columns}
-            getRowId={(row) => `${selectedFolder}-${row.id}`}
+            columnVisibilityModel={columnVisibilityModel ?? DEFAULT_COLUMN_VISIBILITY}
+            getRowId={(row) => `${selectedFolder}-${row.instanceId ?? row.id}`}
             pageSizeOptions={[10, 25, 50, 100]}
             initialState={{
               pagination: {
