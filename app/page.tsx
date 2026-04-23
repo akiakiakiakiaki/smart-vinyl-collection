@@ -6,7 +6,7 @@ export default function Page() {
   const router = useRouter();
 
   const handleVisitCollections = () => {
-    router.push('/collection-overview');
+    router.push('/collection/overview');
   };
   return (
     <div className="flex flex-col h-full">

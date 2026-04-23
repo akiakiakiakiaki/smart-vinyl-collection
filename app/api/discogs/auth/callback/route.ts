@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { buildOAuthHeader } from '@/app/lib/discogsOauth';
+import { buildOAuthHeader } from '@/lib/discogsOauth';
 
 export async function GET(request: Request) {
   const urlObj = new URL(request.url);

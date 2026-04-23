@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { DiscogsCacheData } from '../types/cache';
+import { DiscogsCacheData } from '../../types/cache';
 
 const CACHE_BASE = path.join(process.cwd(), '.cache', 'discogs');
 

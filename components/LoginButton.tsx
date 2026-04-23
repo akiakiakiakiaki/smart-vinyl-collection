@@ -2,7 +2,6 @@
 
 import { Button } from '@mui/material';
 import LoginIcon from '@mui/icons-material/Login';
-import { useUserStore } from '@/app/store/useUserStore';
 
 export default function LoginButton() {
   const handleLogin = async () => {

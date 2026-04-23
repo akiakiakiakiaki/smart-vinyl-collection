@@ -1,17 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CollectionOverviewRow } from '../types/collection';
+import { CollectionOverviewRow } from '@/types/collection';
 
 import Rating from '@mui/material/Rating';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Image from 'next/image';
 
-import { DEFAULT_COLUMN_VISIBILITY } from '../lib/collectionColumns';
-import { formatDiscogsDate } from '../lib/formatUtils';
-import { useCollectionStore } from '../store/useCollectionStore';
+import { DEFAULT_COLUMN_VISIBILITY } from '@/lib/collectionColumns';
+import { formatDiscogsDate } from '@/lib/formatUtils';
+import { useCollectionStore } from '@/store/useCollectionStore';
 
-export default function HomePage() {
+export default function CollectionOverview() {
   const [rows, setRows] = useState<CollectionOverviewRow[]>([]);
 
   // resolves hidration problems

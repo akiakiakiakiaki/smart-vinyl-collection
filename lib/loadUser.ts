@@ -1,4 +1,4 @@
-import { useUserStore } from '@/app/store/useUserStore';
+import { useUserStore } from '@/store/useUserStore';
 
 export async function loadUser() {
   try {

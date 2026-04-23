@@ -1,5 +1,11 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+# AGENTS
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
+- TypeScript strict; no `any`.
+- Do not change public API contracts.
+- Keep layers separated: raw API data, cache, adapters, UI.
+- Mapping belongs in adapters, not components or routes.
+- Prefer minimal diffs; modify only what is necessary.
+- Reuse existing utilities; no duplication.
+- No new dependencies unless strictly necessary.
+- Keep logging minimal; remove debug logs after use.
+- Verify framework APIs if unsure.

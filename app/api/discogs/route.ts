@@ -1,16 +1,11 @@
-import {
-  DiscogsReleaseItem,
-  DiscogsReleasesResponse,
-  DiscogsFolder,
-  DiscogsFoldersResponse,
-} from '@/app/types/discogs';
+import { DiscogsReleaseItem, DiscogsReleasesResponse, DiscogsFolder, DiscogsFoldersResponse } from '@/types/discogs';
 import { NextResponse } from 'next/server';
-import { readCache, writeCache } from '@/app/lib/cache';
-import { DiscogsCacheData } from '@/app/types/cache';
+import { readCache, writeCache } from '@/lib/cache';
+import { DiscogsCacheData } from '@/types/cache';
 
-import { buildOAuthHeader } from '@/app/lib/discogsOauth';
-import { adaptCollectionReleases } from '@/app/lib/collectionAdapter';
-import { getAuth } from '@/app/lib/auth';
+import { buildOAuthHeader } from '@/lib/discogsOauth';
+import { adaptCollectionReleases } from '@/lib/collectionAdapter';
+import { getAuth } from '@/lib/auth';
 
 function buildDiscogsUrl(path: string, params?: Record<string, string | number>) {
   const baseUrl = process.env.DISCOGS_API_URL;

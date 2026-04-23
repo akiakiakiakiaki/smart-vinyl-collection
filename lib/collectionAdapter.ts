@@ -1,5 +1,5 @@
-import { CollectionOverviewRow } from '../types/collection';
-import { DiscogsArtist, DiscogsReleaseItem } from '../types/discogs';
+import { CollectionOverviewRow } from '../../types/collection';
+import { DiscogsArtist, DiscogsReleaseItem } from '../../types/discogs';
 
 export type CollectionAdapterFormat = 'collectionOverview';
 
@@ -44,8 +44,9 @@ function mapToCollectionOverviewRows(releases: DiscogsReleaseItem[]): Collection
       year: release.year ?? null,
       dateAdded: item.date_added ?? '',
       formats:
-        release.formats?.map((formatItem) => [formatItem.name, ...(formatItem.descriptions ?? [])].join(' / ')).join(', ') ??
-        '',
+        release.formats
+          ?.map((formatItem) => [formatItem.name, ...(formatItem.descriptions ?? [])].join(' / '))
+          .join(', ') ?? '',
       cover: release.cover_image ?? null,
       rating: item.rating ?? null,
       labels: release.labels?.map((label) => label.name).join(', ') ?? '',

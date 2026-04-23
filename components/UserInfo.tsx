@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Avatar, Box, Typography } from '@mui/material';
-import { useUserStore } from '@/app/store/useUserStore';
+import { useUserStore } from '@/store/useUserStore';
 
 export default function UserInfo() {
   const user = useUserStore((s) => s.user);

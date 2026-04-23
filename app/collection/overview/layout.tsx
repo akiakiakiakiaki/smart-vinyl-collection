@@ -16,9 +16,9 @@ import {
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import { DiscogsFolder } from '../types/discogs';
-import { COLLECTION_COLUMN_OPTIONS, DEFAULT_COLUMN_VISIBILITY } from '../lib/collectionColumns';
-import { useCollectionStore } from '../store/useCollectionStore';
+import { DiscogsFolder } from '@/types/discogs';
+import { COLLECTION_COLUMN_OPTIONS, DEFAULT_COLUMN_VISIBILITY } from '@/lib/collectionColumns';
+import { useCollectionStore } from '@/store/useCollectionStore';
 
 export default function CollectionLayout({ children }: { children: React.ReactNode }) {
   const selectedFolder = useCollectionStore((s) => s.selectedFolder);
