@@ -1,5 +1,5 @@
-import { CollectionOverviewRow } from '../../types/collection';
-import { DiscogsArtist, DiscogsReleaseItem } from '../../types/discogs';
+import { CollectionOverviewRow } from '@/types/collection';
+import { DiscogsArtist, DiscogsReleaseItem } from '@/types/discogs';
 
 export type CollectionAdapterFormat = 'collectionOverview';
 

@@ -13,6 +13,11 @@ export async function GET(request: Request) {
     expires: new Date(0),
   });
 
+  response.cookies.set('discogs_username', '', {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+
   response.cookies.set('discogs_request_secret', '', {
     httpOnly: true,
     expires: new Date(0),

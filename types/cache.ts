@@ -1,6 +1,11 @@
-import { DiscogsFolder, DiscogsReleaseItem } from './discogs';
+import { DiscogsReleaseItem } from './discogs';
 
-export type DiscogsCacheData = {
-  folders: DiscogsFolder[];
+export type CollectionsCacheData = {
   releases: DiscogsReleaseItem[];
+  ratingSync?: {
+    fetched: number;
+    total: number;
+  };
 };
+
+export type RatingsCacheData = Record<number, number>;

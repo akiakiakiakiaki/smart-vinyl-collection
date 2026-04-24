@@ -1,14 +1,14 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { DiscogsCacheData } from '../../types/cache';
+import { CollectionsCacheData } from '@/types/cache';
 
-const CACHE_BASE = path.join(process.cwd(), '.cache', 'discogs');
+const CACHE_BASE = path.join(process.cwd(), '.cache', 'discogs-collections');
 
 function getFilePath(user: string, folder: string) {
   return path.join(CACHE_BASE, user, `${folder}.json`);
 }
 
-export async function readCache(user: string, folder: string) {
+export async function readCollectionsCache(user: string, folder: string) {
   try {
     const filePath = getFilePath(user, folder);
     const data = await fs.readFile(filePath, 'utf-8');
@@ -18,7 +18,7 @@ export async function readCache(user: string, folder: string) {
   }
 }
 
-export async function writeCache(user: string, folder: string, data: DiscogsCacheData) {
+export async function writeCollectionsCache(user: string, folder: string, data: CollectionsCacheData) {
   const filePath = getFilePath(user, folder);
 
   await fs.mkdir(path.dirname(filePath), { recursive: true });

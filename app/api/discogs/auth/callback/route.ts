@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { buildOAuthHeader } from '@/lib/discogsOauth';
+import { buildOAuthHeader } from '@/lib/discogs/oAuth';
 
 export async function GET(request: Request) {
   const urlObj = new URL(request.url);
@@ -43,10 +43,32 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Failed to get access token' }, { status: 500 });
   }
 
+  const identityUrl = 'https://api.discogs.com/oauth/identity';
+  const identityHeader = buildOAuthHeader({
+    method: 'GET',
+    url: identityUrl,
+    consumerKey,
+    consumerSecret,
+    token: accessToken,
+    tokenSecret: accessSecret,
+  });
+
+  const identityRes = await fetch(identityUrl, {
+    headers: {
+      Authorization: identityHeader,
+    },
+  });
+
+  const identityData = identityRes.ok ? await identityRes.json() : null;
+  const username = typeof identityData?.username === 'string' ? identityData.username : null;
+
   const response = NextResponse.redirect('http://localhost:3000/');
 
   response.cookies.set('discogs_access_token', accessToken, { httpOnly: true });
   response.cookies.set('discogs_access_secret', accessSecret, { httpOnly: true });
+  if (username) {
+    response.cookies.set('discogs_username', username, { httpOnly: true });
+  }
 
   return response;
 }
