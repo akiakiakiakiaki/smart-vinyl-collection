@@ -15,6 +15,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ rele
 
   return getReleaseDetail({
     releaseId,
+    username: auth.username,
     refresh,
     ctx: {
       consumerKey: process.env.DISCOGS_CONSUMER_KEY!,

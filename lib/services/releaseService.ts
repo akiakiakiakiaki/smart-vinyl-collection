@@ -3,6 +3,7 @@ import { readReleaseDetailsCache, writeReleaseDetailsCache } from '@/lib/cache/r
 import { DiscogsContext, getReleaseDetails as getReleaseDetailsClient } from '@/lib/discogs/client';
 import { DiscogsUpstreamError } from '@/lib/discogs/errors';
 import { DiscogsReleaseDetail } from '@/types/discogs';
+import { readRatingsCache } from '@/lib/cache/ratingsCache';
 
 function parseReleaseId(value: string) {
   const releaseId = Number(value);
@@ -16,6 +17,7 @@ function parseReleaseId(value: string) {
 
 export async function getReleaseDetail(params: {
   releaseId: string;
+  username: string | null;
   refresh: boolean;
   ctx: DiscogsContext;
   signal: AbortSignal;
@@ -27,18 +29,20 @@ export async function getReleaseDetail(params: {
   }
 
   try {
+    const userRating = params.username ? (await readRatingsCache(params.username))[releaseId] ?? null : null;
+
     if (!params.refresh) {
       const cached = await readReleaseDetailsCache(releaseId);
 
       if (cached) {
-        return NextResponse.json({ release: cached });
+        return NextResponse.json({ release: cached, userRating });
       }
     }
 
     const release = (await getReleaseDetailsClient(releaseId, params.ctx, params.signal)) as DiscogsReleaseDetail;
     await writeReleaseDetailsCache(releaseId, release);
 
-    return NextResponse.json({ release });
+    return NextResponse.json({ release, userRating });
   } catch (err) {
     if (err instanceof DiscogsUpstreamError) {
       return NextResponse.json({ error: err.message, upstream: err.upstream ?? null }, { status: err.status });

@@ -1,7 +1,14 @@
 import { ReleaseDetailSectionItem, ReleaseDetailTrack, ReleaseDetailView, ReleaseDetailVideo } from '@/types/release';
 import { DiscogsArtist, DiscogsLabel, DiscogsReleaseDetail, DiscogsTrack } from '@/types/discogs';
 
-export function adaptReleaseDetail(release: DiscogsReleaseDetail): ReleaseDetailView {
+type ReleaseDetailAdapterOptions = {
+  userRating?: number | null;
+};
+
+export function adaptReleaseDetail(
+  release: DiscogsReleaseDetail,
+  { userRating = null }: ReleaseDetailAdapterOptions = {}
+): ReleaseDetailView {
   return {
     id: release.id,
     title: release.title ?? 'Unknown Title',
@@ -37,6 +44,7 @@ export function adaptReleaseDetail(release: DiscogsReleaseDetail): ReleaseDetail
       ratingCount: release.community?.rating?.count ?? null,
       status: release.community?.status ?? '',
     },
+    userRating,
     marketplace: {
       lowestPrice: release.lowest_price ?? null,
       numForSale: release.num_for_sale ?? null,

@@ -9,6 +9,8 @@ export type CollectionOverviewRow = {
   formats: string;
   cover: string | null;
   rating: number | null;
+  lowestPrice: number | null;
+  releaseDetailsLoaded: boolean;
   labels: string;
   genres: string;
   styles: string;

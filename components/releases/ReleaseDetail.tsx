@@ -1,10 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
@@ -53,15 +51,6 @@ export function ReleaseDetail({
       spacing={3}
       sx={{ pb: 4 }}
     >
-      <Button
-        component={Link}
-        href="/collection/overview"
-        variant="outlined"
-        sx={{ alignSelf: 'flex-start' }}
-      >
-        Back to collection
-      </Button>
-
       <Paper sx={{ p: 3 }}>
         <Stack
           direction={{ xs: 'column', md: 'row' }}
@@ -157,6 +146,21 @@ export function ReleaseDetail({
                       </Typography>
                     )}
                   </Stack>
+                </Stack>
+              )}
+              {release.userRating != null && (
+                <Stack spacing={0.5}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                  >
+                    Your rating
+                  </Typography>
+                  <Rating
+                    value={release.userRating}
+                    max={5}
+                    readOnly
+                  />
                 </Stack>
               )}
               <Metric

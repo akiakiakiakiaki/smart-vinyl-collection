@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useCollectionStore } from '@/store/useCollectionStore';
 import { adaptCollectionReleases } from '@/lib/adapters/collectionAdapter';
 import { CollectionOverviewRow } from '@/types/collection';
@@ -15,6 +15,27 @@ export function useCollectionData(selectedFolder: string | null) {
 
   const handledReleasesRefreshVersion = useRef(0);
 
+  const fetchReleaseDetails = useCallback(async (releaseId: number) => {
+    const res = await fetch(`/api/discogs/releases/${releaseId}`);
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || 'Unknown error');
+    }
+
+    setRows((prev) =>
+      prev.map((row) =>
+        row.id === releaseId
+          ? {
+              ...row,
+              lowestPrice: data.release?.lowest_price ?? null,
+              releaseDetailsLoaded: true,
+            }
+          : row
+      )
+    );
+  }, []);
+
   useEffect(() => {
     if (!selectedFolder) return;
 
@@ -30,7 +51,11 @@ export function useCollectionData(selectedFolder: string | null) {
           throw new Error(data.error || 'Unknown error');
         }
 
-        setRows(adaptCollectionReleases(data.releases ?? [], 'collectionOverview'));
+        setRows(
+          adaptCollectionReleases(data.releases ?? [], 'collectionOverview', {
+            releaseDetailsByReleaseId: data.releaseDetailsByReleaseId ?? {},
+          })
+        );
         markFolderCached(selectedFolder);
         resetRatingSyncProgress();
         setError(null);
@@ -65,7 +90,11 @@ export function useCollectionData(selectedFolder: string | null) {
           throw new Error(data.error || 'Unknown error');
         }
 
-        setRows(adaptCollectionReleases(data.releases ?? [], 'collectionOverview'));
+        setRows(
+          adaptCollectionReleases(data.releases ?? [], 'collectionOverview', {
+            releaseDetailsByReleaseId: data.releaseDetailsByReleaseId ?? {},
+          })
+        );
         markFolderCached(selectedFolder);
         setError(null);
       } catch (err) {
@@ -85,5 +114,6 @@ export function useCollectionData(selectedFolder: string | null) {
     setRows,
     loading,
     error,
+    fetchReleaseDetails,
   };
 }

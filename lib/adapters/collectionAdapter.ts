@@ -1,22 +1,35 @@
 import { CollectionOverviewRow } from '@/types/collection';
-import { DiscogsArtist, DiscogsReleaseItem } from '@/types/discogs';
+import { DiscogsArtist, DiscogsReleaseDetail, DiscogsReleaseItem } from '@/types/discogs';
 
 export type CollectionAdapterFormat = 'collectionOverview';
 
+type CollectionAdapterOptions = {
+  releaseDetailsByReleaseId?: Record<number, DiscogsReleaseDetail>;
+};
+
 export function adaptCollectionReleases(
   releases: DiscogsReleaseItem[],
-  format: 'collectionOverview'
+  format: 'collectionOverview',
+  options?: CollectionAdapterOptions
 ): CollectionOverviewRow[];
-export function adaptCollectionReleases(releases: DiscogsReleaseItem[], format: CollectionAdapterFormat) {
+
+export function adaptCollectionReleases(
+  releases: DiscogsReleaseItem[],
+  format: CollectionAdapterFormat,
+  options: CollectionAdapterOptions = {}
+) {
   switch (format) {
     case 'collectionOverview':
-      return mapToCollectionOverviewRows(releases);
+      return mapToCollectionOverviewRows(releases, options);
     default:
       return assertNever(format);
   }
 }
 
-function mapToCollectionOverviewRows(releases: DiscogsReleaseItem[]): CollectionOverviewRow[] {
+function mapToCollectionOverviewRows(
+  releases: DiscogsReleaseItem[],
+  { releaseDetailsByReleaseId = {} }: CollectionAdapterOptions
+): CollectionOverviewRow[] {
   const releaseCounts = new Map<number, number>();
   const releasePositions = new Map<number, number>();
 
@@ -27,6 +40,8 @@ function mapToCollectionOverviewRows(releases: DiscogsReleaseItem[]): Collection
 
   return releases.map((item): CollectionOverviewRow => {
     const release = item.basic_information;
+    const releaseDetailsLoaded = Object.prototype.hasOwnProperty.call(releaseDetailsByReleaseId, release.id);
+    const releaseDetail = releaseDetailsByReleaseId[release.id];
     const occurrence = (releasePositions.get(release.id) ?? 0) + 1;
     const totalOccurrences = releaseCounts.get(release.id) ?? 1;
 
@@ -49,6 +64,8 @@ function mapToCollectionOverviewRows(releases: DiscogsReleaseItem[]): Collection
           .join(', ') ?? '',
       cover: release.cover_image ?? null,
       rating: item.rating ?? null,
+      lowestPrice: releaseDetail?.lowest_price ?? null,
+      releaseDetailsLoaded,
       labels: release.labels?.map((label) => label.name).join(', ') ?? '',
       genres: release.genres?.join(', ') ?? '',
       styles: release.styles?.join(', ') ?? '',

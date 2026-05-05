@@ -58,6 +58,7 @@ export type ReleaseDetailView = {
     ratingCount: number | null;
     status: string;
   };
+  userRating: number | null;
   marketplace: {
     lowestPrice: number | null;
     numForSale: number | null;

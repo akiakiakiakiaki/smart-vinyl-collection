@@ -7,6 +7,7 @@ import { CollectionsCacheData } from '@/types/cache';
 import { DiscogsReleaseItem, DiscogsFoldersResponse } from '@/types/discogs';
 import { fetchReleaseRatingsBatch, getPendingRatingReleaseIds, mergeRatingsIntoReleases } from '@/lib/discogs/ratings';
 import { mergeRatingsCache, readRatingsCache } from '../cache/ratingsCache';
+import { readReleaseDetailsCaches } from '@/lib/cache/releaseDetailsCache';
 
 export async function getFolders(username: string, ctx: DiscogsContext): Promise<DiscogsFoldersResponse> {
   const cached = await readFoldersCache(username);
@@ -28,9 +29,20 @@ function hasUsableCache(data: CollectionsCacheData | null) {
   return !!data && Array.isArray(data.releases);
 }
 
-function buildResponseFromCache(cache: CollectionsCacheData) {
+async function buildCollectionResponse(params: {
+  folders?: DiscogsFoldersResponse['folders'];
+  releases: DiscogsReleaseItem[];
+  ratingSync?: CollectionsCacheData['ratingSync'];
+}) {
+  const releaseDetailsByReleaseId = await readReleaseDetailsCaches(
+    params.releases.map((release) => release.basic_information.id)
+  );
+
   return {
-    releases: cache.releases,
+    ...(params.folders ? { folders: params.folders } : {}),
+    releases: params.releases,
+    releaseDetailsByReleaseId,
+    ...(params.ratingSync ? { ratingSync: params.ratingSync } : {}),
   };
 }
 
@@ -58,13 +70,13 @@ export async function getCollection(params: {
         new Map(Object.entries(globalRatings).map(([k, v]) => [Number(k), v]))
       );
 
-      return NextResponse.json({
+      return NextResponse.json(await buildCollectionResponse({
         releases: merged,
         ratingSync: cached.ratingSync ?? {
           fetched: 0,
           total: cached.releases.length,
         },
-      });
+      }));
     }
 
     const existingCache = await readCollectionsCache(username, folderName);
@@ -78,10 +90,7 @@ export async function getCollection(params: {
         new Map(Object.entries(globalRatings).map(([k, v]) => [Number(k), v]))
       );
 
-      return NextResponse.json({
-        folders: folders.folders,
-        releases: merged,
-      });
+      return NextResponse.json(await buildCollectionResponse({ folders: folders.folders, releases: merged }));
     }
 
     if (refreshRatings) {
@@ -163,14 +172,14 @@ export async function getCollection(params: {
 
       const folders = await getFolders(username, ctx);
 
-      const apiResponse = {
+      const apiResponse = await buildCollectionResponse({
         folders: folders.folders,
         releases: finalMergedReleases,
         ratingSync: cacheData.ratingSync ?? {
           fetched: 0,
           total: cacheData.releases.length,
         },
-      };
+      });
 
       return NextResponse.json(apiResponse);
     }
@@ -208,10 +217,10 @@ export async function getCollection(params: {
 
     await writeCollectionsCache(username, folderName, cacheData);
 
-    const apiResponse = {
+    const apiResponse = await buildCollectionResponse({
       folders: foldersData.folders,
       releases: merged,
-    };
+    });
 
     return NextResponse.json(apiResponse);
   } catch (err) {

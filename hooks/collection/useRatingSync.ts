@@ -56,7 +56,9 @@ export function useRatingSync(
           const fetched = Math.min(data.ratingSync?.fetched ?? 0, total);
 
           setRatingSyncProgress(fetched, total);
-          const incoming = adaptCollectionReleases(data.releases ?? [], 'collectionOverview');
+          const incoming = adaptCollectionReleases(data.releases ?? [], 'collectionOverview', {
+            releaseDetailsByReleaseId: data.releaseDetailsByReleaseId ?? {},
+          });
 
           setRows((prev) => mergeRows(prev, incoming));
         } catch {
@@ -85,7 +87,9 @@ export function useRatingSync(
           throw new Error(data.error || 'Unknown error');
         }
 
-        const incoming = adaptCollectionReleases(data.releases ?? [], 'collectionOverview');
+        const incoming = adaptCollectionReleases(data.releases ?? [], 'collectionOverview', {
+          releaseDetailsByReleaseId: data.releaseDetailsByReleaseId ?? {},
+        });
 
         setRows((prev) => mergeRows(prev, incoming));
         markFolderCached(selectedFolder);
@@ -171,6 +175,8 @@ function mergeRows(prev: CollectionOverviewRow[], incoming: CollectionOverviewRo
       ...existing,
       ...row,
       rating: row.rating ?? existing?.rating ?? null,
+      lowestPrice: row.lowestPrice ?? existing?.lowestPrice ?? null,
+      releaseDetailsLoaded: row.releaseDetailsLoaded || existing?.releaseDetailsLoaded || false,
     });
   }
 

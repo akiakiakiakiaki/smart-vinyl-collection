@@ -35,10 +35,14 @@ export function CollectionToolbar() {
   const canRefreshRatings =
     Boolean(selectedFolder) && Boolean(cachedFolders[selectedFolder]) && !isLoading && !isRefreshing;
 
-  const visibleColumnCount = COLLECTION_COLUMN_OPTIONS.filter((column) => columnVisibilityModel[column.field]).length;
+  const effectiveColumnVisibilityModel = { ...DEFAULT_COLUMN_VISIBILITY, ...columnVisibilityModel };
+
+  const visibleColumnCount = COLLECTION_COLUMN_OPTIONS.filter(
+    (column) => effectiveColumnVisibilityModel[column.field]
+  ).length;
 
   const isDefaultColumnLayout = COLLECTION_COLUMN_OPTIONS.every(
-    (column) => columnVisibilityModel[column.field] === DEFAULT_COLUMN_VISIBILITY[column.field]
+    (column) => effectiveColumnVisibilityModel[column.field] === DEFAULT_COLUMN_VISIBILITY[column.field]
   );
 
   const [columnAnchorEl, setColumnAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -56,7 +60,7 @@ export function CollectionToolbar() {
   };
 
   const handleToggleColumn = (field: (typeof COLLECTION_COLUMN_OPTIONS)[number]['field']) => {
-    setColumnVisibility(field, !columnVisibilityModel[field]);
+    setColumnVisibility(field, !effectiveColumnVisibilityModel[field]);
   };
 
   return (
@@ -110,7 +114,7 @@ export function CollectionToolbar() {
         open={columnsOpen}
         anchorEl={columnAnchorEl}
         onClose={() => setColumnAnchorEl(null)}
-        columnVisibilityModel={columnVisibilityModel}
+        columnVisibilityModel={effectiveColumnVisibilityModel}
         onToggle={handleToggleColumn}
         onReset={resetColumnVisibility}
       />

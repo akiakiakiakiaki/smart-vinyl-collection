@@ -9,7 +9,7 @@ export default function CollectionOverview() {
   const selectedFolder = useCollectionStore((s) => s.selectedFolder);
   const columnVisibilityModel = useCollectionStore((s) => s.columnVisibilityModel);
 
-  const { rows, setRows, loading, error } = useCollectionData(selectedFolder);
+  const { rows, setRows, loading, error, fetchReleaseDetails } = useCollectionData(selectedFolder);
 
   useRatingSync(selectedFolder, rows, setRows);
 
@@ -32,6 +32,7 @@ export default function CollectionOverview() {
           loading={loading}
           selectedFolder={selectedFolder}
           columnVisibilityModel={columnVisibilityModel}
+          onFetchReleaseDetails={fetchReleaseDetails}
         />
       </main>
     </div>

@@ -1,11 +1,15 @@
 'use client';
 
+import { useState } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import IconButton from '@mui/material/IconButton';
 import Rating from '@mui/material/Rating';
+import Tooltip from '@mui/material/Tooltip';
 
-import { formatDiscogsDate } from '@/lib/formatUtils';
+import { formatDiscogsDate, formatPrice } from '@/lib/formatUtils';
 import { DEFAULT_COLUMN_VISIBILITY } from '@/lib/collectionColumns';
 import { CollectionOverviewRow } from '@/types/collection';
 
@@ -14,10 +18,34 @@ type Props = {
   loading: boolean;
   selectedFolder: string | null;
   columnVisibilityModel: Record<string, boolean>;
+  onFetchReleaseDetails: (releaseId: number) => Promise<void>;
 };
 
-export function CollectionDataGrid({ rows, loading, selectedFolder, columnVisibilityModel }: Props) {
+export function CollectionDataGrid({
+  rows,
+  loading,
+  selectedFolder,
+  columnVisibilityModel,
+  onFetchReleaseDetails,
+}: Props) {
   const router = useRouter();
+  const [fetchingReleaseIds, setFetchingReleaseIds] = useState<Set<number>>(new Set());
+
+  const handleFetchReleaseDetails = async (releaseId: number) => {
+    setFetchingReleaseIds((prev) => new Set(prev).add(releaseId));
+
+    try {
+      await onFetchReleaseDetails(releaseId);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setFetchingReleaseIds((prev) => {
+        const next = new Set(prev);
+        next.delete(releaseId);
+        return next;
+      });
+    }
+  };
 
   const columns: GridColDef[] = [
     {
@@ -46,6 +74,43 @@ export function CollectionDataGrid({ rows, loading, selectedFolder, columnVisibi
     { field: 'labels', headerName: 'Labels', flex: 1.2 },
     { field: 'genres', headerName: 'Genres', flex: 1 },
     { field: 'styles', headerName: 'Styles', flex: 1.2 },
+    {
+      field: 'lowestPrice',
+      headerName: 'Lowest Price',
+      width: 140,
+      sortComparator: (v1, v2) => (v1 ?? Number.POSITIVE_INFINITY) - (v2 ?? Number.POSITIVE_INFINITY),
+      renderCell: (params) => {
+        const value = params.value as number | null | undefined;
+        const row = params.row as CollectionOverviewRow;
+        const isFetching = fetchingReleaseIds.has(row.id);
+
+        if (value != null) {
+          return formatPrice(value);
+        }
+
+        if (row.releaseDetailsLoaded) {
+          return '-';
+        }
+
+        return (
+          <Tooltip title="Fetch release details">
+            <span>
+              <IconButton
+                size="small"
+                aria-label="Fetch release details"
+                disabled={isFetching}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  void handleFetchReleaseDetails(row.id);
+                }}
+              >
+                <CloudDownloadIcon fontSize="small" />
+              </IconButton>
+            </span>
+          </Tooltip>
+        );
+      },
+    },
     {
       field: 'dateAdded',
       headerName: 'Added',
@@ -81,7 +146,7 @@ export function CollectionDataGrid({ rows, loading, selectedFolder, columnVisibi
       <DataGrid
         rows={rows}
         columns={columns}
-        columnVisibilityModel={columnVisibilityModel ?? DEFAULT_COLUMN_VISIBILITY}
+        columnVisibilityModel={{ ...DEFAULT_COLUMN_VISIBILITY, ...columnVisibilityModel }}
         getRowId={(row) => `${selectedFolder}-${row.instanceId ?? row.id}`}
         pageSizeOptions={[10, 25, 50, 100]}
         initialState={{
