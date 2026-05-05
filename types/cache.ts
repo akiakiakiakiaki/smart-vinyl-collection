@@ -1,4 +1,4 @@
-import { DiscogsReleaseItem } from './discogs';
+import { DiscogsReleaseDetail, DiscogsReleaseItem } from './discogs';
 
 export type CollectionsCacheData = {
   releases: DiscogsReleaseItem[];
@@ -9,3 +9,5 @@ export type CollectionsCacheData = {
 };
 
 export type RatingsCacheData = Record<number, number>;
+
+export type ReleaseDetailsCacheData = DiscogsReleaseDetail;

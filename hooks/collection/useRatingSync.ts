@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useCollectionStore } from '@/store/useCollectionStore';
-import { adaptCollectionReleases } from '@/lib/collectionAdapter';
+import { adaptCollectionReleases } from '@/lib/adapters/collectionAdapter';
 import { CollectionOverviewRow } from '@/types/collection';
 import { RATE_LIMIT_PER_MINUTE, RATE_LIMIT_SAFETY_BUFFER, RATE_LIMIT_WINDOW_MS } from '@/lib/discogs/ratings';
 

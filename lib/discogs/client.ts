@@ -85,3 +85,8 @@ export async function getFolderReleasesPage(
   });
   return authedGet(url, ctx, signal);
 }
+
+export async function getReleaseDetails(releaseId: number, ctx: DiscogsContext, signal?: AbortSignal) {
+  const url = buildDiscogsUrl(`releases/${releaseId}`);
+  return authedGet(url, ctx, signal);
+}

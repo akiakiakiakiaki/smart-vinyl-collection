@@ -2,6 +2,7 @@
 
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import Rating from '@mui/material/Rating';
 
 import { formatDiscogsDate } from '@/lib/formatUtils';
@@ -16,6 +17,8 @@ type Props = {
 };
 
 export function CollectionDataGrid({ rows, loading, selectedFolder, columnVisibilityModel }: Props) {
+  const router = useRouter();
+
   const columns: GridColDef[] = [
     {
       field: 'cover',
@@ -90,6 +93,14 @@ export function CollectionDataGrid({ rows, loading, selectedFolder, columnVisibi
           },
         }}
         loading={loading}
+        onRowClick={(params) => {
+          router.push(`/collection/releases/${params.row.id}`);
+        }}
+        sx={{
+          '& .MuiDataGrid-row': {
+            cursor: 'pointer',
+          },
+        }}
       />
     </div>
   );

@@ -34,3 +34,9 @@ export function formatEta(totalSeconds: number) {
 
   return `${mm}:${ss}`;
 }
+
+export function formatPrice(value: number | null) {
+  if (value == null) return null;
+
+  return `$${value.toFixed(2)}`;
+}

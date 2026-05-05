@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useCollectionStore } from '@/store/useCollectionStore';
-import { adaptCollectionReleases } from '@/lib/collectionAdapter';
+import { adaptCollectionReleases } from '@/lib/adapters/collectionAdapter';
 import { CollectionOverviewRow } from '@/types/collection';
 
 export function useCollectionData(selectedFolder: string | null) {
