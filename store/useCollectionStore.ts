@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ColumnVisibilityModel, DEFAULT_COLUMN_VISIBILITY } from '../lib/collectionColumns';
-
+import { GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 type CollectionState = {
   selectedFolder: string;
   viewMode: 'grid' | 'list';
@@ -15,6 +15,9 @@ type CollectionState = {
   ratingSyncEtaSeconds: number;
   cachedFolders: Record<string, boolean>;
   columnVisibilityModel: ColumnVisibilityModel;
+  paginationModel: GridPaginationModel;
+  sortModel: GridSortModel;
+  hasHydrated: boolean;
 
   setSelectedFolder: (folder: string) => void;
   setViewMode: (mode: 'grid' | 'list') => void;
@@ -22,6 +25,9 @@ type CollectionState = {
   setIsRefreshing: (isRefreshing: boolean) => void;
   setRatingSyncProgress: (fetched: number, total: number) => void;
   setRatingSyncEtaSeconds: (seconds: number) => void;
+  setPaginationModel: (model: GridPaginationModel) => void;
+  setSortModel: (model: GridSortModel) => void;
+  setHasHydrated: (hydrated: boolean) => void;
   tickRatingSyncEtaSeconds: () => void;
   resetRatingSyncProgress: () => void;
   markFolderCached: (folder: string) => void;
@@ -49,6 +55,9 @@ export const useCollectionStore = create<CollectionState>()(
       ratingSyncEtaSeconds: 0,
       cachedFolders: {},
       columnVisibilityModel: DEFAULT_COLUMN_VISIBILITY,
+      paginationModel: { page: 0, pageSize: 25 },
+      sortModel: [{ field: 'artist', sort: 'asc' }],
+      hasHydrated: false,
 
       setSelectedFolder: (folder) => set({ selectedFolder: folder }),
       setViewMode: (mode) => set({ viewMode: mode }),
@@ -56,6 +65,23 @@ export const useCollectionStore = create<CollectionState>()(
       setIsRefreshing: (isRefreshing) => set({ isRefreshing }),
       setRatingSyncProgress: (fetched, total) => set({ ratingSyncFetched: fetched, ratingSyncTotal: total }),
       setRatingSyncEtaSeconds: (seconds) => set({ ratingSyncEtaSeconds: Math.max(0, seconds) }),
+      setPaginationModel: (model) =>
+        set((state) => {
+          if (state.paginationModel.page === model.page && state.paginationModel.pageSize === model.pageSize) {
+            return state;
+          }
+          return { paginationModel: model };
+        }),
+
+      setSortModel: (model) =>
+        set((state) => {
+          if (JSON.stringify(state.sortModel) === JSON.stringify(model)) {
+            return state;
+          }
+          return { sortModel: model };
+        }),
+
+      setHasHydrated: (hydrated) => set({ hasHydrated: hydrated }),
       tickRatingSyncEtaSeconds: () =>
         set((state) => ({
           ratingSyncEtaSeconds: Math.max(0, state.ratingSyncEtaSeconds - 1),
@@ -100,7 +126,13 @@ export const useCollectionStore = create<CollectionState>()(
         viewMode: state.viewMode,
         cachedFolders: state.cachedFolders,
         columnVisibilityModel: state.columnVisibilityModel,
+        paginationModel: state.paginationModel,
+        sortModel: state.sortModel,
       }),
+
+      onRehydrateStorage: () => (state?: CollectionState) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );

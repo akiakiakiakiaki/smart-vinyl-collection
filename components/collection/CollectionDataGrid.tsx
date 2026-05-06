@@ -9,6 +9,8 @@ import IconButton from '@mui/material/IconButton';
 import Rating from '@mui/material/Rating';
 import Tooltip from '@mui/material/Tooltip';
 
+import { useCollectionStore } from '@/store/useCollectionStore';
+
 import { formatDiscogsDate, formatPrice } from '@/lib/formatUtils';
 import { DEFAULT_COLUMN_VISIBILITY } from '@/lib/collectionColumns';
 import { CollectionOverviewRow } from '@/types/collection';
@@ -31,6 +33,12 @@ export function CollectionDataGrid({
   const router = useRouter();
   const [fetchingReleaseIds, setFetchingReleaseIds] = useState<Set<number>>(new Set());
 
+  const paginationModel = useCollectionStore((s) => s.paginationModel);
+  const sortModel = useCollectionStore((s) => s.sortModel);
+  const setPaginationModel = useCollectionStore((s) => s.setPaginationModel);
+  const setSortModel = useCollectionStore((s) => s.setSortModel);
+  const hasHydrated = useCollectionStore((s) => s.hasHydrated);
+
   const handleFetchReleaseDetails = async (releaseId: number) => {
     setFetchingReleaseIds((prev) => new Set(prev).add(releaseId));
 
@@ -46,6 +54,10 @@ export function CollectionDataGrid({
       });
     }
   };
+
+  if (!hasHydrated) {
+    return null;
+  }
 
   const columns: GridColDef[] = [
     {
@@ -149,14 +161,10 @@ export function CollectionDataGrid({
         columnVisibilityModel={{ ...DEFAULT_COLUMN_VISIBILITY, ...columnVisibilityModel }}
         getRowId={(row) => `${selectedFolder}-${row.instanceId ?? row.id}`}
         pageSizeOptions={[10, 25, 50, 100]}
-        initialState={{
-          pagination: {
-            paginationModel: { pageSize: 25, page: 0 },
-          },
-          sorting: {
-            sortModel: [{ field: 'artist', sort: 'asc' }],
-          },
-        }}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        sortModel={sortModel}
+        onSortModelChange={setSortModel}
         loading={loading}
         onRowClick={(params) => {
           router.push(`/collection/releases/${params.row.id}`);

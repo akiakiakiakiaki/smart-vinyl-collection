@@ -7,9 +7,9 @@ export const DEFAULT_COLUMN_VISIBILITY = {
   labels: false,
   genres: false,
   styles: false,
+  lowestPrice: false,
   dateAdded: false,
   rating: false,
-  lowestPrice: true,
 } as const;
 
 export const COLLECTION_COLUMN_OPTIONS = [
@@ -21,9 +21,9 @@ export const COLLECTION_COLUMN_OPTIONS = [
   { field: 'labels', label: 'Labels' },
   { field: 'genres', label: 'Genres' },
   { field: 'styles', label: 'Styles' },
+  { field: 'lowestPrice', label: 'Lowest Price' },
   { field: 'dateAdded', label: 'Added' },
   { field: 'rating', label: 'Rating' },
-  { field: 'lowestPrice', label: 'Lowest Price' },
 ] as const;
 
 export type CollectionColumnField = (typeof COLLECTION_COLUMN_OPTIONS)[number]['field'];

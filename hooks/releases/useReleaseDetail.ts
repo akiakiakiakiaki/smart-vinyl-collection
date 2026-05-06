@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { adaptReleaseDetail } from '@/lib/adapters/releaseDetailAdapter';
 import { ReleaseDetailView } from '@/types/release';
 import { useReleaseStore } from '@/store/useReleaseStore';
+import { fetchReleaseDetail } from '@/lib/api/releaseApi';
 
 export function useReleaseDetail(releaseId: string | null) {
   const [release, setRelease] = useState<ReleaseDetailView | null>(null);
@@ -25,21 +26,17 @@ export function useReleaseDetail(releaseId: string | null) {
 
     const abortController = new AbortController();
 
-    const fetchReleaseDetail = async () => {
+    const loadReleaseDetail = async () => {
       setLoading(true);
       if (refresh) {
         setReleaseRefreshing(releaseId, true);
       }
 
       try {
-        const res = await fetch(`/api/discogs/releases/${releaseId}${refresh ? '?refresh=true' : ''}`, {
+        const data = await fetchReleaseDetail(releaseId, {
+          refresh,
           signal: abortController.signal,
         });
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.error || 'Unknown error');
-        }
 
         setRelease(adaptReleaseDetail(data.release, { userRating: data.userRating ?? null }));
         setError(null);
@@ -57,7 +54,7 @@ export function useReleaseDetail(releaseId: string | null) {
       }
     };
 
-    fetchReleaseDetail();
+    loadReleaseDetail();
 
     return () => abortController.abort();
   }, [releaseId, refreshVersion, setReleaseRefreshing]);

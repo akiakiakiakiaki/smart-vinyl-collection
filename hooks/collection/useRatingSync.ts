@@ -2,7 +2,8 @@ import { useEffect, useRef } from 'react';
 import { useCollectionStore } from '@/store/useCollectionStore';
 import { adaptCollectionReleases } from '@/lib/adapters/collectionAdapter';
 import { CollectionOverviewRow } from '@/types/collection';
-import { RATE_LIMIT_PER_MINUTE, RATE_LIMIT_SAFETY_BUFFER, RATE_LIMIT_WINDOW_MS } from '@/lib/discogs/ratings';
+import { fetchCollectionRatingProgress, refreshCollectionRatings } from '@/lib/api/collectionApi';
+import { RATE_LIMIT_PER_MINUTE, RATE_LIMIT_SAFETY_BUFFER, RATE_LIMIT_WINDOW_MS } from '@/lib/discogs/rateLimit';
 
 export function useRatingSync(
   selectedFolder: string | null,
@@ -45,13 +46,7 @@ export function useRatingSync(
 
       const pollSyncProgress = async () => {
         try {
-          const res = await fetch(`/api/discogs?folder=${selectedFolder}&progress=true`, {
-            signal: syncPollAbortController.signal,
-          });
-
-          if (!res.ok) return;
-
-          const data = await res.json();
+          const data = await fetchCollectionRatingProgress(selectedFolder, syncPollAbortController.signal);
           const total = getUniqueReleaseCount(data.releases ?? []);
           const fetched = Math.min(data.ratingSync?.fetched ?? 0, total);
 
@@ -77,15 +72,7 @@ export function useRatingSync(
       }, 1000);
 
       try {
-        const res = await fetch(`/api/discogs?folder=${selectedFolder}&refreshRatings=true`, {
-          signal: abortController.signal,
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.error || 'Unknown error');
-        }
+        const data = await refreshCollectionRatings(selectedFolder, abortController.signal);
 
         const incoming = adaptCollectionReleases(data.releases ?? [], 'collectionOverview', {
           releaseDetailsByReleaseId: data.releaseDetailsByReleaseId ?? {},

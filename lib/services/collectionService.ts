@@ -7,7 +7,7 @@ import { CollectionsCacheData } from '@/types/cache';
 import { DiscogsReleaseItem, DiscogsFoldersResponse } from '@/types/discogs';
 import { fetchReleaseRatingsBatch, getPendingRatingReleaseIds, mergeRatingsIntoReleases } from '@/lib/discogs/ratings';
 import { mergeRatingsCache, readRatingsCache } from '../cache/ratingsCache';
-import { readReleaseDetailsCaches } from '@/lib/cache/releaseDetailsCache';
+import { buildCollectionResponse } from '@/lib/collection/buildCollectionResponse';
 
 export async function getFolders(username: string, ctx: DiscogsContext): Promise<DiscogsFoldersResponse> {
   const cached = await readFoldersCache(username);
@@ -27,23 +27,6 @@ export async function getFolders(username: string, ctx: DiscogsContext): Promise
 
 function hasUsableCache(data: CollectionsCacheData | null) {
   return !!data && Array.isArray(data.releases);
-}
-
-async function buildCollectionResponse(params: {
-  folders?: DiscogsFoldersResponse['folders'];
-  releases: DiscogsReleaseItem[];
-  ratingSync?: CollectionsCacheData['ratingSync'];
-}) {
-  const releaseDetailsByReleaseId = await readReleaseDetailsCaches(
-    params.releases.map((release) => release.basic_information.id)
-  );
-
-  return {
-    ...(params.folders ? { folders: params.folders } : {}),
-    releases: params.releases,
-    releaseDetailsByReleaseId,
-    ...(params.ratingSync ? { ratingSync: params.ratingSync } : {}),
-  };
 }
 
 export async function getCollection(params: {

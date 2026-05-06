@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState, useRef } from 'react';
 import { useCollectionStore } from '@/store/useCollectionStore';
 import { adaptCollectionReleases } from '@/lib/adapters/collectionAdapter';
 import { CollectionOverviewRow } from '@/types/collection';
+import { fetchCollection } from '@/lib/api/collectionApi';
+import { fetchReleaseDetail } from '@/lib/api/releaseApi';
 
 export function useCollectionData(selectedFolder: string | null) {
   const [rows, setRows] = useState<CollectionOverviewRow[]>([]);
@@ -16,12 +18,7 @@ export function useCollectionData(selectedFolder: string | null) {
   const handledReleasesRefreshVersion = useRef(0);
 
   const fetchReleaseDetails = useCallback(async (releaseId: number) => {
-    const res = await fetch(`/api/discogs/releases/${releaseId}`);
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.error || 'Unknown error');
-    }
+    const data = await fetchReleaseDetail(releaseId);
 
     setRows((prev) =>
       prev.map((row) =>
@@ -44,12 +41,7 @@ export function useCollectionData(selectedFolder: string | null) {
       setIsLoading(true);
 
       try {
-        const res = await fetch(`/api/discogs?folder=${selectedFolder}`);
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.error || 'Unknown error');
-        }
+        const data = await fetchCollection(selectedFolder);
 
         setRows(
           adaptCollectionReleases(data.releases ?? [], 'collectionOverview', {
@@ -83,12 +75,7 @@ export function useCollectionData(selectedFolder: string | null) {
       setIsLoading(true);
 
       try {
-        const res = await fetch(`/api/discogs?folder=${selectedFolder}&refresh=true`);
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.error || 'Unknown error');
-        }
+        const data = await fetchCollection(selectedFolder, { refresh: true });
 
         setRows(
           adaptCollectionReleases(data.releases ?? [], 'collectionOverview', {
