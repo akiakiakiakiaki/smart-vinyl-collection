@@ -17,5 +17,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/collection-overview/:path*', '/'],
+  matcher: ['/', '/collection/:path*', '/api/discogs/:path*'],
 };
