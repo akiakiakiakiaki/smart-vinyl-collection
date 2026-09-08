@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { useCallback, useMemo, useState } from 'react';
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
@@ -39,7 +39,7 @@ export function CollectionDataGrid({
   const setSortModel = useCollectionStore((s) => s.setSortModel);
   const hasHydrated = useCollectionStore((s) => s.hasHydrated);
 
-  const handleFetchReleaseDetails = async (releaseId: number) => {
+  const handleFetchReleaseDetails = useCallback(async (releaseId: number) => {
     setFetchingReleaseIds((prev) => new Set(prev).add(releaseId));
 
     try {
@@ -53,113 +53,129 @@ export function CollectionDataGrid({
         return next;
       });
     }
-  };
+  }, [onFetchReleaseDetails]);
+
+  const renderRatingCell = useCallback(
+    (params: GridRenderCellParams<CollectionOverviewRow, string | null>) =>
+      params.value ? (
+        <div style={{ position: 'relative', width: 50, height: 50 }}>
+          <Image
+            src={params.value as string}
+            alt="cover"
+            fill
+            sizes="50px"
+            style={{ objectFit: 'contain' }}
+            loading="eager"
+          />
+        </div>
+      ) : null,
+    []
+  );
+
+  const columns = useMemo<GridColDef[]>(
+    () => [
+      {
+        field: 'cover',
+        headerName: 'Cover',
+        width: 100,
+        sortable: false,
+        renderCell: renderRatingCell,
+      },
+      { field: 'artist', headerName: 'Artist', flex: 1 },
+      { field: 'displayTitle', headerName: 'Title', flex: 1 },
+      { field: 'year', headerName: 'Year', width: 120 },
+      { field: 'formats', headerName: 'Formats', flex: 1.2 },
+      { field: 'labels', headerName: 'Labels', flex: 1.2 },
+      { field: 'genres', headerName: 'Genres', flex: 1 },
+      { field: 'styles', headerName: 'Styles', flex: 1.2 },
+      {
+        field: 'lowestPrice',
+        headerName: 'Lowest Price',
+        width: 140,
+        sortComparator: (v1, v2) => (v1 ?? Number.POSITIVE_INFINITY) - (v2 ?? Number.POSITIVE_INFINITY),
+        renderCell: (params) => {
+          const value = params.value as number | null | undefined;
+          const row = params.row as CollectionOverviewRow;
+          const isFetching = fetchingReleaseIds.has(row.id);
+
+          if (value != null) {
+            return formatPrice(value);
+          }
+
+          if (row.releaseDetailsLoaded) {
+            return '-';
+          }
+
+          return (
+            <Tooltip title="Fetch release details">
+              <span>
+                <IconButton
+                  size="small"
+                  aria-label="Fetch release details"
+                  disabled={isFetching}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    void handleFetchReleaseDetails(row.id);
+                  }}
+                >
+                  <CloudDownloadIcon fontSize="small" />
+                </IconButton>
+              </span>
+            </Tooltip>
+          );
+        },
+      },
+      {
+        field: 'dateAdded',
+        headerName: 'Added',
+        width: 180,
+        valueFormatter: (value) => formatDiscogsDate((value as string) ?? ''),
+      },
+      {
+        field: 'rating',
+        headerName: 'Rating',
+        width: 150,
+        sortComparator: (v1, v2) => (v1 ?? -1) - (v2 ?? -1),
+        renderCell: (params) => {
+          const value = params.value as number | null | undefined;
+
+          if (value == null) {
+            return <span>-</span>;
+          }
+
+          return (
+            <Rating
+              value={value}
+              max={5}
+              readOnly
+              size="small"
+            />
+          );
+        },
+      },
+    ],
+    [fetchingReleaseIds, handleFetchReleaseDetails, renderRatingCell]
+  );
+
+  const mergedColumnVisibility = useMemo(
+    () => ({ ...DEFAULT_COLUMN_VISIBILITY, ...columnVisibilityModel }),
+
+    [columnVisibilityModel]
+  );
+
+  const getRowId = useCallback((row: CollectionOverviewRow) => `${selectedFolder}-${row.instanceId}`, [selectedFolder]);
 
   if (!hasHydrated) {
     return null;
   }
-
-  const columns: GridColDef[] = [
-    {
-      field: 'cover',
-      headerName: 'Cover',
-      width: 100,
-      sortable: false,
-      renderCell: (params) =>
-        params.value ? (
-          <div style={{ position: 'relative', width: 50, height: 50 }}>
-            <Image
-              src={params.value as string}
-              alt="cover"
-              fill
-              sizes="50px"
-              style={{ objectFit: 'contain' }}
-              loading="eager"
-            />
-          </div>
-        ) : null,
-    },
-    { field: 'artist', headerName: 'Artist', flex: 1 },
-    { field: 'displayTitle', headerName: 'Title', flex: 1 },
-    { field: 'year', headerName: 'Year', width: 120 },
-    { field: 'formats', headerName: 'Formats', flex: 1.2 },
-    { field: 'labels', headerName: 'Labels', flex: 1.2 },
-    { field: 'genres', headerName: 'Genres', flex: 1 },
-    { field: 'styles', headerName: 'Styles', flex: 1.2 },
-    {
-      field: 'lowestPrice',
-      headerName: 'Lowest Price',
-      width: 140,
-      sortComparator: (v1, v2) => (v1 ?? Number.POSITIVE_INFINITY) - (v2 ?? Number.POSITIVE_INFINITY),
-      renderCell: (params) => {
-        const value = params.value as number | null | undefined;
-        const row = params.row as CollectionOverviewRow;
-        const isFetching = fetchingReleaseIds.has(row.id);
-
-        if (value != null) {
-          return formatPrice(value);
-        }
-
-        if (row.releaseDetailsLoaded) {
-          return '-';
-        }
-
-        return (
-          <Tooltip title="Fetch release details">
-            <span>
-              <IconButton
-                size="small"
-                aria-label="Fetch release details"
-                disabled={isFetching}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  void handleFetchReleaseDetails(row.id);
-                }}
-              >
-                <CloudDownloadIcon fontSize="small" />
-              </IconButton>
-            </span>
-          </Tooltip>
-        );
-      },
-    },
-    {
-      field: 'dateAdded',
-      headerName: 'Added',
-      width: 180,
-      valueFormatter: (value) => formatDiscogsDate((value as string) ?? ''),
-    },
-    {
-      field: 'rating',
-      headerName: 'Rating',
-      width: 150,
-      sortComparator: (v1, v2) => (v1 ?? -1) - (v2 ?? -1),
-      renderCell: (params) => {
-        const value = params.value as number | null | undefined;
-
-        if (value == null) {
-          return <span>-</span>;
-        }
-
-        return (
-          <Rating
-            value={value}
-            max={5}
-            readOnly
-            size="small"
-          />
-        );
-      },
-    },
-  ];
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
       <DataGrid
         rows={rows}
         columns={columns}
-        columnVisibilityModel={{ ...DEFAULT_COLUMN_VISIBILITY, ...columnVisibilityModel }}
-        getRowId={(row) => `${selectedFolder}-${row.instanceId ?? row.id}`}
+        columnVisibilityModel={mergedColumnVisibility}
+        getRowId={getRowId}
         pageSizeOptions={[10, 25, 50, 100]}
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
