@@ -14,7 +14,7 @@ export function FolderSelect({ selectedFolder, onChange }: Props) {
 
   useEffect(() => {
     const fetchFolders = async () => {
-      const res = await fetch('/api/discogs?folders=true');
+      const res = await fetch('/api/discogs?folders=true&refresh=true');
       const data = await res.json();
 
       if (res.ok) {
@@ -22,8 +22,21 @@ export function FolderSelect({ selectedFolder, onChange }: Props) {
       }
     };
 
-    fetchFolders();
+    void fetchFolders();
+
+    const handleFoldersInvalidated = () => {
+      void fetchFolders();
+    };
+
+    window.addEventListener('discogs-folders-invalidated', handleFoldersInvalidated);
+    return () => window.removeEventListener('discogs-folders-invalidated', handleFoldersInvalidated);
   }, []);
+
+  useEffect(() => {
+    if (folders.length > 0 && selectedFolder && !folders.some((folder) => folder.name === selectedFolder)) {
+      onChange('');
+    }
+  }, [folders, onChange, selectedFolder]);
 
   const selectedFolderExists = folders.some((folder) => folder.name === selectedFolder);
   const selectValue = selectedFolderExists ? selectedFolder : '';

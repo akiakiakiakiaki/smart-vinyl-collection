@@ -14,6 +14,7 @@ export function useCollectionData(selectedFolder: string | null) {
   const setIsLoading = useCollectionStore((s) => s.setIsLoading);
   const markFolderCached = useCollectionStore((s) => s.markFolderCached);
   const resetRatingSyncProgress = useCollectionStore((s) => s.resetRatingSyncProgress);
+  const clearFolder = useCollectionStore((s) => s.clearFolder);
 
   const handledReleasesRefreshVersion = useRef(0);
 
@@ -53,6 +54,13 @@ export function useCollectionData(selectedFolder: string | null) {
         setError(null);
       } catch (err) {
         console.error(err);
+        if (isDeletedFolderError(err)) {
+          clearFolder();
+          window.dispatchEvent(new Event('discogs-folders-invalidated'));
+          setError(null);
+          setRows([]);
+          return;
+        }
         setError(err instanceof Error ? err.message : 'Unknown error');
         setRows([]);
       } finally {
@@ -62,7 +70,7 @@ export function useCollectionData(selectedFolder: string | null) {
     };
 
     fetchFromCache();
-  }, [selectedFolder, markFolderCached, setIsLoading, resetRatingSyncProgress]);
+  }, [clearFolder, selectedFolder, markFolderCached, setIsLoading, resetRatingSyncProgress]);
 
   useEffect(() => {
     if (!selectedFolder) return;
@@ -86,6 +94,13 @@ export function useCollectionData(selectedFolder: string | null) {
         setError(null);
       } catch (err) {
         console.error(err);
+        if (isDeletedFolderError(err)) {
+          clearFolder();
+          window.dispatchEvent(new Event('discogs-folders-invalidated'));
+          setError(null);
+          setRows([]);
+          return;
+        }
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
         setLoading(false);
@@ -94,7 +109,7 @@ export function useCollectionData(selectedFolder: string | null) {
     };
 
     refreshReleases();
-  }, [refreshReleasesVersion, selectedFolder, markFolderCached, setIsLoading]);
+  }, [clearFolder, refreshReleasesVersion, selectedFolder, markFolderCached, setIsLoading]);
 
   return {
     rows,
@@ -103,4 +118,10 @@ export function useCollectionData(selectedFolder: string | null) {
     error,
     fetchReleaseDetails,
   };
+}
+
+function isDeletedFolderError(err: unknown) {
+  if (!err || typeof err !== 'object') return false;
+  const error = err as { status?: number; data?: { folderDeleted?: boolean } };
+  return error.status === 404 && error.data?.folderDeleted === true;
 }

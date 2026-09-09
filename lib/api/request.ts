@@ -6,7 +6,10 @@ export async function requestJson<T>(input: RequestInfo | URL, init?: RequestIni
 
   if (!res.ok) {
     const errorData = data as Partial<ApiErrorResponse>;
-    throw new Error(errorData.error || 'Unknown error');
+    const error = new Error(errorData.error || 'Unknown error') as Error & { status?: number; data?: unknown };
+    error.status = res.status;
+    error.data = data;
+    throw error;
   }
 
   return data as T;

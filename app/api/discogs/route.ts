@@ -10,6 +10,7 @@ export async function GET(request: Request) {
   const refreshRatings = searchParams.get('refreshRatings') === 'true';
   const isIdentityRequest = searchParams.get('identity') === 'true';
   const foldersOnly = searchParams.get('folders') === 'true';
+  const refreshFolders = searchParams.get('refresh') === 'true';
 
   const auth = await getAuth();
 
@@ -34,7 +35,7 @@ export async function GET(request: Request) {
   }
 
   if (foldersOnly) {
-    const folders = await getFolders(usernameFromCookie!, ctx);
+    const folders = await getFolders(usernameFromCookie!, ctx, { forceRefresh: refreshFolders });
     return NextResponse.json({ folders: folders.folders });
   }
 

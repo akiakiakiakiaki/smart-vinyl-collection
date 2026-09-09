@@ -2,15 +2,20 @@ import { NextResponse } from 'next/server';
 import { DiscogsContext, getFolders as getFoldersClient, getFolderReleasesPage } from '@/lib/discogs/client';
 import { DiscogsUpstreamError } from '@/lib/discogs/errors';
 import { readCollectionsCache, writeCollectionsCache } from '@/lib/cache/collectionsCache';
-import { readFoldersCache, writeFoldersCache } from '@/lib/cache/foldersCache';
+import { invalidateFoldersCache, readFoldersCache, writeFoldersCache } from '@/lib/cache/foldersCache';
 import { CollectionsCacheData } from '@/types/cache';
 import { DiscogsReleaseItem, DiscogsFoldersResponse } from '@/types/discogs';
 import { fetchReleaseRatingsBatch, getPendingRatingReleaseIds, mergeRatingsIntoReleases } from '@/lib/discogs/ratings';
 import { mergeRatingsCache, readRatingsCache } from '../cache/ratingsCache';
 import { buildCollectionResponse } from '@/lib/collection/buildCollectionResponse';
+import { CACHE_TTL_MS } from '@/lib/cache/cacheConfig';
 
-export async function getFolders(username: string, ctx: DiscogsContext): Promise<DiscogsFoldersResponse> {
-  const cached = await readFoldersCache(username);
+export async function getFolders(
+  username: string,
+  ctx: DiscogsContext,
+  options: { forceRefresh?: boolean } = {}
+): Promise<DiscogsFoldersResponse> {
+  const cached = options.forceRefresh ? null : await readFoldersCache(username);
   if (cached) return cached;
 
   try {
@@ -27,6 +32,11 @@ export async function getFolders(username: string, ctx: DiscogsContext): Promise
 
 function hasUsableCache(data: CollectionsCacheData | null) {
   return !!data && Array.isArray(data.releases);
+}
+
+function isCollectionCacheFresh(data: CollectionsCacheData | null) {
+  if (!data?.syncedAt) return false;
+  return Date.now() - new Date(data.syncedAt).getTime() <= CACHE_TTL_MS;
 }
 
 export async function getCollection(params: {
@@ -64,7 +74,7 @@ export async function getCollection(params: {
 
     const existingCache = await readCollectionsCache(username, folderName);
 
-    if (!refresh && !refreshRatings && hasUsableCache(existingCache)) {
+    if (!refresh && !refreshRatings && hasUsableCache(existingCache) && isCollectionCacheFresh(existingCache)) {
       const folders = await getFolders(username, ctx);
       const globalRatings = await readRatingsCache(username);
 
@@ -91,6 +101,8 @@ export async function getCollection(params: {
 
       await writeCollectionsCache(username, folderName, {
         releases: allReleases,
+        syncedAt: existingCache.syncedAt,
+        folderId: existingCache.folderId,
         ratingSync: { fetched: 0, total: allReleases.length },
       });
 
@@ -121,6 +133,8 @@ export async function getCollection(params: {
 
           await writeCollectionsCache(username, folderName, {
             releases: mergedReleases,
+            syncedAt: existingCache.syncedAt,
+            folderId: existingCache.folderId,
             ratingSync: {
               fetched: Array.from(new Set([...fetchedReleaseIds, ...success])).length,
               total: allReleases.length,
@@ -145,6 +159,8 @@ export async function getCollection(params: {
 
       const cacheData: CollectionsCacheData = {
         releases: finalMergedReleases,
+        syncedAt: existingCache.syncedAt,
+        folderId: existingCache.folderId,
         ratingSync: {
           fetched: Array.from(new Set([...fetchedReleaseIds, ...success])).length,
           total: allReleases.length,
@@ -167,7 +183,9 @@ export async function getCollection(params: {
       return NextResponse.json(apiResponse);
     }
 
-    const foldersData = (await getFolders(username, ctx)) as DiscogsFoldersResponse;
+    // A full collection sync also refreshes the folder index so deleted or renamed
+    // folders cannot keep pointing at an obsolete Discogs folder id.
+    const foldersData = (await getFolders(username, ctx, { forceRefresh: true })) as DiscogsFoldersResponse;
     const selected = foldersData.folders.find((f) => f.name === folderName);
 
     if (!selected) {
@@ -179,7 +197,24 @@ export async function getCollection(params: {
     let allReleases: DiscogsReleaseItem[] = [];
 
     do {
-      const data = await getFolderReleasesPage(username, selected.id, page, ctx, 100, signal);
+      let data;
+
+      try {
+        data = await getFolderReleasesPage(username, selected.id, page, ctx, 100, signal);
+      } catch (err) {
+        if (err instanceof DiscogsUpstreamError && err.status === 404) {
+          await invalidateFoldersCache(username);
+          return NextResponse.json(
+            {
+              error: `Folder "${folderName}" no longer exists on Discogs`,
+              folderDeleted: true,
+            },
+            { status: 404 }
+          );
+        }
+        throw err;
+      }
+
       allReleases = allReleases.concat(data.releases);
       totalPages = data.pagination.pages;
       page++;
@@ -195,6 +230,8 @@ export async function getCollection(params: {
 
     const cacheData: CollectionsCacheData = {
       releases: allReleases,
+      syncedAt: new Date().toISOString(),
+      folderId: selected.id,
       ratingSync: existingCache?.ratingSync ?? { fetched: 0, total: allReleases.length },
     };
 

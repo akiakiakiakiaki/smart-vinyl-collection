@@ -2,6 +2,8 @@ import { DiscogsReleaseDetail, DiscogsReleaseItem } from './discogs';
 
 export type CollectionsCacheData = {
   releases: DiscogsReleaseItem[];
+  syncedAt?: string;
+  folderId?: number;
   ratingSync?: {
     fetched: number;
     total: number;

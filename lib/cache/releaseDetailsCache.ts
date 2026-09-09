@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { ReleaseDetailsCacheData } from '@/types/cache';
+import { CACHE_TTL_MS } from './cacheConfig';
 
 const CACHE_BASE = path.join(process.cwd(), '.cache', 'discogs-releases');
 
@@ -8,9 +9,14 @@ function getFilePath(releaseId: number) {
   return path.join(CACHE_BASE, `${releaseId}.json`);
 }
 
-export async function readReleaseDetailsCache(releaseId: number): Promise<ReleaseDetailsCacheData | null> {
+export async function readReleaseDetailsCache(
+  releaseId: number,
+  maxAgeMs = CACHE_TTL_MS
+): Promise<ReleaseDetailsCacheData | null> {
   try {
     const filePath = getFilePath(releaseId);
+    const stats = await fs.stat(filePath);
+    if (Date.now() - stats.mtimeMs > maxAgeMs) return null;
     const data = await fs.readFile(filePath, 'utf-8');
     return JSON.parse(data);
   } catch {
