@@ -24,9 +24,10 @@ export default function CollectionOverview() {
 
   return (
     <div className="h-full">
+      <h1 className="sr-only">Collection overview</h1>
       {selectedFolder && rows.length === 0 && !loading && <p>No records found</p>}
 
-      <main className="h-full">
+      <div className="h-full">
         <CollectionDataGrid
           rows={rows}
           loading={loading}
@@ -34,7 +35,7 @@ export default function CollectionOverview() {
           columnVisibilityModel={columnVisibilityModel}
           onFetchReleaseDetails={fetchReleaseDetails}
         />
-      </main>
+      </div>
     </div>
   );
 }

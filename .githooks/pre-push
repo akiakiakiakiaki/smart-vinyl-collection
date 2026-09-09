@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -eu
+
+nvm_directory="${NVM_DIR:-$HOME/.nvm}"
+if [ -s "$nvm_directory/nvm.sh" ]; then
+  # SourceTree may start Git hooks without the interactive shell profile.
+  . "$nvm_directory/nvm.sh"
+  nvm use 22 >/dev/null
+fi
+
+repository_root=$(git rev-parse --show-toplevel)
+cd "$repository_root"
+
+echo "Running the complete test suite before push..."
+npm run test:all
+
+echo "Pre-push checks passed."

@@ -1,5 +1,5 @@
 'use client';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import LoginButton from '@/components/LoginButton';
 export default function LoginPage() {
   return (
@@ -11,7 +11,14 @@ export default function LoginPage() {
         justifyContent: 'center',
       }}
     >
-      <LoginButton></LoginButton>
+      <Typography
+        component="h1"
+        variant="h4"
+        sx={{ mb: 2 }}
+      >
+        Login with Discogs
+      </Typography>
+      <LoginButton />
     </Box>
   );
 }

@@ -1,0 +1,25 @@
+#!/bin/sh
+
+set -eu
+
+nvm_directory="${NVM_DIR:-$HOME/.nvm}"
+if [ -s "$nvm_directory/nvm.sh" ]; then
+  # SourceTree may start Git hooks without the interactive shell profile.
+  # Load nvm explicitly so Vitest 5 runs with the project's Node.js version.
+  . "$nvm_directory/nvm.sh"
+  nvm use 22 >/dev/null
+fi
+
+repository_root=$(git rev-parse --show-toplevel)
+cd "$repository_root"
+
+echo "Running unit and integration tests..."
+npm run test:run
+
+echo "Running TypeScript check..."
+npx tsc --noEmit
+
+echo "Running lint..."
+npm run lint
+
+echo "Pre-commit checks passed."

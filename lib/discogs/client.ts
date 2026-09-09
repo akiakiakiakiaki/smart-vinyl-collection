@@ -21,11 +21,13 @@ function buildDiscogsUrl(path: string, params?: Record<string, string | number>)
 }
 
 async function parseUpstreamError(res: Response) {
+  const textResponse = res.clone();
+
   try {
     return await res.json();
   } catch {
     try {
-      const t = await res.text();
+      const t = await textResponse.text();
       return t || null;
     } catch {
       return null;

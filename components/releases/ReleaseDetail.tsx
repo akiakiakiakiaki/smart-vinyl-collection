@@ -92,7 +92,7 @@ export function ReleaseDetail({
               </Typography>
               {release.artists && (
                 <Typography
-                  variant="h6"
+                  variant="h2"
                   color="text.secondary"
                 >
                   {release.artists}

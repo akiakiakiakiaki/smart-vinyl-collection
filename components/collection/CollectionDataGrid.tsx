@@ -163,7 +163,7 @@ export function CollectionDataGrid({
     [columnVisibilityModel]
   );
 
-  const getRowId = useCallback((row: CollectionOverviewRow) => `${selectedFolder}-${row.instanceId}`, [selectedFolder]);
+  const getRowId = useCallback((row: CollectionOverviewRow) => `${selectedFolder}-${row.instanceId ?? row.id}`, [selectedFolder]);
 
   if (!hasHydrated) {
     return null;

@@ -33,7 +33,7 @@ export function FolderSelect({ selectedFolder, onChange }: Props) {
   }, []);
 
   useEffect(() => {
-    if (folders.length > 0 && selectedFolder && !folders.some((folder) => folder.name === selectedFolder)) {
+    if (selectedFolder && !folders.some((folder) => folder.name === selectedFolder)) {
       onChange('');
     }
   }, [folders, onChange, selectedFolder]);
@@ -45,6 +45,7 @@ export function FolderSelect({ selectedFolder, onChange }: Props) {
     <Select
       size="small"
       value={selectValue}
+      inputProps={{ 'aria-label': 'Collection folder' }}
       displayEmpty
       renderValue={(value) => (value ? (value as string) : <em>Select folder</em>)}
       onChange={(e) => {

@@ -45,6 +45,14 @@ Run dev server:
 npm run dev
 ```
 
+Enable the repository Git hooks once after cloning:
+
+```bash
+npm run setup:hooks
+```
+
+The pre-commit hook runs Vitest, TypeScript, and lint checks. The pre-push hook runs the complete unit, integration, and Playwright test suite. SourceTree uses these hooks automatically when it uses this repository's Git configuration.
+
 ## Notes
 
 - Do not introduce new dependencies unless necessary

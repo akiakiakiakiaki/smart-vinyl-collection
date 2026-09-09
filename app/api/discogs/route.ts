@@ -35,6 +35,13 @@ export async function GET(request: Request) {
   }
 
   if (foldersOnly) {
+    if (!usernameFromCookie) {
+      return NextResponse.json(
+        { error: 'Missing Discogs username in session. Please sign out and sign in again.' },
+        { status: 401 }
+      );
+    }
+
     const folders = await getFolders(usernameFromCookie!, ctx, { forceRefresh: refreshFolders });
     return NextResponse.json({ folders: folders.folders });
   }
