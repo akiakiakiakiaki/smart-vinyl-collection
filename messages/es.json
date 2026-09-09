@@ -1,0 +1,78 @@
+{
+  "common": {
+    "loginWithDiscogs": "Iniciar sesión con Discogs",
+    "logout": "Cerrar sesión",
+    "loading": "Cargando...",
+    "error": "Error",
+    "unknownError": "Error desconocido"
+  },
+  "home": {
+    "welcome": "Bienvenido",
+    "description": "Aquí habrá un panel más completo más adelante",
+    "exploreCollections": "Explorar tus colecciones"
+  },
+  "collection": {
+    "refreshReleases": "Actualizar lanzamientos",
+    "refreshRatings": "Actualizar valoraciones",
+    "cancelRefreshRatings": "Cancelar actualización de valoraciones ({fetched}/{total}, {eta})",
+    "cancelRefreshRatingsSimple": "Cancelar actualización de valoraciones",
+    "selectFolder": "Seleccionar carpeta",
+    "folderLabel": "Carpeta de colección",
+    "columns": "Columnas",
+    "showOrHideColumns": "Mostrar u ocultar columnas",
+    "resetColumns": "Restablecer",
+    "fetchReleaseDetails": "Cargar detalles del lanzamiento",
+    "cover": "portada",
+    "added": "Añadido",
+    "lowestPrice": "Precio más bajo",
+    "rating": "Valoración",
+    "collectionError": "Error",
+    "noRecords": "No se encontraron registros",
+    "overviewTitle": "Resumen de la colección",
+    "columnLabels": {
+      "cover": "Portada",
+      "artist": "Artista",
+      "displayTitle": "Título",
+      "year": "Año",
+      "formats": "Formatos",
+      "labels": "Sellos",
+      "genres": "Géneros",
+      "styles": "Estilos",
+      "lowestPrice": "Precio más bajo",
+      "dateAdded": "Añadido",
+      "rating": "Valoración"
+    }
+  },
+  "release": {
+    "backToCollection": "Volver a la colección",
+    "refresh": "Actualizar lanzamiento",
+    "refreshing": "Actualizando lanzamiento",
+    "released": "Publicado {date}",
+    "quality": "Calidad: {value}",
+    "communityRating": "Valoración de la comunidad",
+    "yourRating": "Tu valoración",
+    "have": "En posesión",
+    "want": "Deseado",
+    "forSale": "En venta",
+    "lowestPrice": "Precio más bajo",
+    "noDetails": "No se encontraron detalles del lanzamiento.",
+    "formats": "Formatos",
+    "genresStyles": "Géneros y estilos",
+    "labels": "Sellos",
+    "noLabels": "No se indicaron sellos.",
+    "companies": "Empresas",
+    "credits": "Créditos",
+    "tracklist": "Lista de canciones",
+    "position": "Posición",
+    "title": "Título",
+    "artists": "Artistas",
+    "duration": "Duración",
+    "identifiers": "Identificadores",
+    "notes": "Notas",
+    "videos": "Vídeos",
+    "noValues": "No hay valores disponibles."
+  },
+  "auth": {
+    "loginTitle": "Iniciar sesión con Discogs"
+  }
+}

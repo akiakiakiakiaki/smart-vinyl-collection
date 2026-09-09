@@ -1,0 +1,78 @@
+{
+  "common": {
+    "loginWithDiscogs": "Mit Discogs anmelden",
+    "logout": "Abmelden",
+    "loading": "Wird geladen...",
+    "error": "Fehler",
+    "unknownError": "Unbekannter Fehler"
+  },
+  "home": {
+    "welcome": "Willkommen",
+    "description": "Hier entsteht später ein schickes Dashboard",
+    "exploreCollections": "Sammlungen öffnen"
+  },
+  "collection": {
+    "refreshReleases": "Releases aktualisieren",
+    "refreshRatings": "Bewertungen aktualisieren",
+    "cancelRefreshRatings": "Bewertungen abbrechen ({fetched}/{total}, {eta})",
+    "cancelRefreshRatingsSimple": "Bewertungen abbrechen",
+    "selectFolder": "Ordner auswählen",
+    "folderLabel": "Sammlungsordner",
+    "columns": "Spalten",
+    "showOrHideColumns": "Spalten ein- oder ausblenden",
+    "resetColumns": "Zurücksetzen",
+    "fetchReleaseDetails": "Release-Details laden",
+    "cover": "Cover",
+    "added": "Hinzugefügt",
+    "lowestPrice": "Niedrigster Preis",
+    "rating": "Bewertung",
+    "collectionError": "Fehler",
+    "noRecords": "Keine Einträge gefunden",
+    "overviewTitle": "Sammlungsübersicht",
+    "columnLabels": {
+      "cover": "Cover",
+      "artist": "Interpret",
+      "displayTitle": "Titel",
+      "year": "Jahr",
+      "formats": "Formate",
+      "labels": "Labels",
+      "genres": "Genres",
+      "styles": "Stile",
+      "lowestPrice": "Niedrigster Preis",
+      "dateAdded": "Hinzugefügt",
+      "rating": "Bewertung"
+    }
+  },
+  "release": {
+    "backToCollection": "Zur Sammlung",
+    "refresh": "Release aktualisieren",
+    "refreshing": "Release wird aktualisiert",
+    "released": "Veröffentlicht {date}",
+    "quality": "Qualität: {value}",
+    "communityRating": "Community-Bewertung",
+    "yourRating": "Deine Bewertung",
+    "have": "Besitz",
+    "want": "Gesucht",
+    "forSale": "Zum Verkauf",
+    "lowestPrice": "Niedrigster Preis",
+    "noDetails": "Keine Release-Details gefunden.",
+    "formats": "Formate",
+    "genresStyles": "Genres & Stile",
+    "labels": "Labels",
+    "noLabels": "Keine Labels angegeben.",
+    "companies": "Unternehmen",
+    "credits": "Mitwirkende",
+    "tracklist": "Titelliste",
+    "position": "Position",
+    "title": "Titel",
+    "artists": "Interpreten",
+    "duration": "Dauer",
+    "identifiers": "Kennungen",
+    "notes": "Notizen",
+    "videos": "Videos",
+    "noValues": "Keine Werte angegeben."
+  },
+  "auth": {
+    "loginTitle": "Mit Discogs anmelden"
+  }
+}

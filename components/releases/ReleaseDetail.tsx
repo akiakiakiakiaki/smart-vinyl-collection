@@ -18,6 +18,7 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import { ReleaseDetailSectionItem, ReleaseDetailView } from '@/types/release';
 import { formatPrice } from '@/lib/formatUtils';
+import { useLocale, useTranslations } from 'next-intl';
 
 export function ReleaseDetail({
   release,
@@ -28,6 +29,9 @@ export function ReleaseDetail({
   loading: boolean;
   error: string | null;
 }) {
+  const t = useTranslations('release');
+  const locale = useLocale();
+
   if (loading) {
     return (
       <Stack sx={{ minHeight: 320, alignItems: 'center', justifyContent: 'center' }}>
@@ -41,7 +45,7 @@ export function ReleaseDetail({
   }
 
   if (!release) {
-    return <Alert severity="info">No release details found.</Alert>;
+    return <Alert severity="info">{t('noDetails')}</Alert>;
   }
 
   const primaryImage = release.images[0];
@@ -108,8 +112,8 @@ export function ReleaseDetail({
             >
               {release.year && <Chip label={release.year} />}
               {release.country && <Chip label={release.country} />}
-              {release.released && <Chip label={`Released ${release.released}`} />}
-              {release.dataQuality && <Chip label={`Quality: ${release.dataQuality}`} />}
+              {release.released && <Chip label={t('released', { date: release.released })} />}
+              {release.dataQuality && <Chip label={t('quality', { value: release.dataQuality })} />}
             </Stack>
 
             <Stack
@@ -124,7 +128,7 @@ export function ReleaseDetail({
                     variant="body2"
                     color="text.secondary"
                   >
-                    Community rating
+                    {t('communityRating')}
                   </Typography>
                   <Stack
                     direction="row"
@@ -154,7 +158,7 @@ export function ReleaseDetail({
                     variant="body2"
                     color="text.secondary"
                   >
-                    Your rating
+                    {t('yourRating')}
                   </Typography>
                   <Rating
                     value={release.userRating}
@@ -164,20 +168,20 @@ export function ReleaseDetail({
                 </Stack>
               )}
               <Metric
-                label="Have"
+                label={t('have')}
                 value={release.community.have}
               />
               <Metric
-                label="Want"
+                label={t('want')}
                 value={release.community.want}
               />
               <Metric
-                label="For sale"
+                label={t('forSale')}
                 value={release.marketplace.numForSale}
               />
               <Metric
-                label="Lowest price"
-                value={formatPrice(release.marketplace.lowestPrice)}
+                label={t('lowestPrice')}
+                value={formatPrice(release.marketplace.lowestPrice, locale)}
               />
             </Stack>
 
@@ -204,48 +208,49 @@ export function ReleaseDetail({
         </Stack>
       </Paper>
 
-      <Section title="Formats">
-        <ChipList values={release.formats} />
+      <Section title={t('formats')}>
+        <ChipList values={release.formats} empty={t('noValues')} />
       </Section>
 
-      <Section title="Genres & Styles">
+      <Section title={t('genresStyles')}>
         <Stack spacing={1}>
           <ChipList
             values={release.genres}
             color="primary"
+            empty={t('noValues')}
           />
-          <ChipList values={release.styles} />
+          <ChipList values={release.styles} empty={t('noValues')} />
         </Stack>
       </Section>
 
-      <Section title="Labels">
+      <Section title={t('labels')}>
         <ItemList
           items={release.labels}
-          empty="No labels listed."
+          empty={t('noLabels')}
         />
       </Section>
 
       {release.companies.length > 0 && (
-        <Section title="Companies">
-          <ItemList items={release.companies} />
+        <Section title={t('companies')}>
+          <ItemList items={release.companies} empty={t('noValues')} />
         </Section>
       )}
 
       {release.extraArtists.length > 0 && (
-        <Section title="Credits">
-          <ItemList items={release.extraArtists} />
+        <Section title={t('credits')}>
+          <ItemList items={release.extraArtists} empty={t('noValues')} />
         </Section>
       )}
 
-      <Section title="Tracklist">
+      <Section title={t('tracklist')}>
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Position</TableCell>
-              <TableCell>Title</TableCell>
-              <TableCell>Artists</TableCell>
-              <TableCell>Credits</TableCell>
-              <TableCell align="right">Duration</TableCell>
+              <TableCell>{t('position')}</TableCell>
+              <TableCell>{t('title')}</TableCell>
+              <TableCell>{t('artists')}</TableCell>
+              <TableCell>{t('credits')}</TableCell>
+              <TableCell align="right">{t('duration')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -265,19 +270,19 @@ export function ReleaseDetail({
       </Section>
 
       {release.identifiers.length > 0 && (
-        <Section title="Identifiers">
-          <ItemList items={release.identifiers} />
+        <Section title={t('identifiers')}>
+          <ItemList items={release.identifiers} empty={t('noValues')} />
         </Section>
       )}
 
       {release.notes && (
-        <Section title="Notes">
+        <Section title={t('notes')}>
           <Typography sx={{ whiteSpace: 'pre-line' }}>{release.notes}</Typography>
         </Section>
       )}
 
       {release.videos.length > 0 && (
-        <Section title="Videos">
+        <Section title={t('videos')}>
           <Stack
             divider={<Divider />}
             spacing={1}
@@ -324,9 +329,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function ChipList({ values, color }: { values: string[]; color?: 'primary' }) {
+function ChipList({ values, color, empty }: { values: string[]; color?: 'primary'; empty: string }) {
   if (values.length === 0) {
-    return <Typography color="text.secondary">No values listed.</Typography>;
+    return <Typography color="text.secondary">{empty}</Typography>;
   }
 
   return (

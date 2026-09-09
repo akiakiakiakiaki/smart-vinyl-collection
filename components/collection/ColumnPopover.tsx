@@ -4,6 +4,7 @@ import { Popover, Box, FormGroup, FormControlLabel, Checkbox, Button } from '@mu
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
 import { COLLECTION_COLUMN_OPTIONS } from '@/lib/collectionColumns';
+import { useTranslations } from 'next-intl';
 
 type ColumnField = (typeof COLLECTION_COLUMN_OPTIONS)[number]['field'];
 
@@ -17,6 +18,7 @@ type Props = {
 };
 
 export function ColumnPopover({ open, anchorEl, onClose, columnVisibilityModel, onToggle, onReset }: Props) {
+  const t = useTranslations('collection');
   return (
     <Popover
       open={open}
@@ -29,13 +31,13 @@ export function ColumnPopover({ open, anchorEl, onClose, columnVisibilityModel, 
     >
       <Box sx={{ p: 2, minWidth: 220 }}>
         <div className="mb-2 flex items-center justify-between">
-          <strong>Columns</strong>
+          <strong>{t('columns')}</strong>
           <Button
             size="small"
             startIcon={<RestartAltIcon />}
             onClick={onReset}
           >
-            Reset
+            {t('resetColumns')}
           </Button>
         </div>
 
@@ -49,7 +51,7 @@ export function ColumnPopover({ open, anchorEl, onClose, columnVisibilityModel, 
                   onChange={() => onToggle(column.field)}
                 />
               }
-              label={column.label}
+                label={t(`columnLabels.${column.field}`)}
             />
           ))}
         </FormGroup>

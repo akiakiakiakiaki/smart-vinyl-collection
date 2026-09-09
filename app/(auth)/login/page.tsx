@@ -1,7 +1,9 @@
 'use client';
 import { Box, Typography } from '@mui/material';
 import LoginButton from '@/components/LoginButton';
+import { useTranslations } from 'next-intl';
 export default function LoginPage() {
+  const t = useTranslations('auth');
   return (
     <Box
       sx={{
@@ -16,7 +18,7 @@ export default function LoginPage() {
         variant="h4"
         sx={{ mb: 2 }}
       >
-        Login with Discogs
+        {t('loginTitle')}
       </Typography>
       <LoginButton />
     </Box>

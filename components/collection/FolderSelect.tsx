@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { DiscogsFolder } from '@/types/discogs';
+import { useTranslations } from 'next-intl';
 
 type Props = {
   selectedFolder: string | null;
@@ -10,6 +11,7 @@ type Props = {
 };
 
 export function FolderSelect({ selectedFolder, onChange }: Props) {
+  const t = useTranslations('collection');
   const [folders, setFolders] = useState<DiscogsFolder[]>([]);
 
   useEffect(() => {
@@ -45,9 +47,9 @@ export function FolderSelect({ selectedFolder, onChange }: Props) {
     <Select
       size="small"
       value={selectValue}
-      inputProps={{ 'aria-label': 'Collection folder' }}
+      inputProps={{ 'aria-label': t('folderLabel') }}
       displayEmpty
-      renderValue={(value) => (value ? (value as string) : <em>Select folder</em>)}
+      renderValue={(value) => (value ? (value as string) : <em>{t('selectFolder')}</em>)}
       onChange={(e) => {
         const value = e.target.value;
         if (!value) return;

@@ -14,6 +14,7 @@ import { useCollectionStore } from '@/store/useCollectionStore';
 import { formatDiscogsDate, formatPrice } from '@/lib/formatUtils';
 import { DEFAULT_COLUMN_VISIBILITY } from '@/lib/collectionColumns';
 import { CollectionOverviewRow } from '@/types/collection';
+import { useLocale, useTranslations } from 'next-intl';
 
 type Props = {
   rows: CollectionOverviewRow[];
@@ -30,6 +31,8 @@ export function CollectionDataGrid({
   columnVisibilityModel,
   onFetchReleaseDetails,
 }: Props) {
+  const t = useTranslations('collection');
+  const locale = useLocale();
   const router = useRouter();
   const [fetchingReleaseIds, setFetchingReleaseIds] = useState<Set<number>>(new Set());
 
@@ -61,7 +64,7 @@ export function CollectionDataGrid({
         <div style={{ position: 'relative', width: 50, height: 50 }}>
           <Image
             src={params.value as string}
-            alt="cover"
+            alt={t('cover')}
             fill
             sizes="50px"
             style={{ objectFit: 'contain' }}
@@ -69,28 +72,28 @@ export function CollectionDataGrid({
           />
         </div>
       ) : null,
-    []
+    [t]
   );
 
   const columns = useMemo<GridColDef[]>(
     () => [
       {
         field: 'cover',
-        headerName: 'Cover',
+        headerName: t('columnLabels.cover'),
         width: 100,
         sortable: false,
         renderCell: renderRatingCell,
       },
-      { field: 'artist', headerName: 'Artist', flex: 1 },
-      { field: 'displayTitle', headerName: 'Title', flex: 1 },
-      { field: 'year', headerName: 'Year', width: 120 },
-      { field: 'formats', headerName: 'Formats', flex: 1.2 },
-      { field: 'labels', headerName: 'Labels', flex: 1.2 },
-      { field: 'genres', headerName: 'Genres', flex: 1 },
-      { field: 'styles', headerName: 'Styles', flex: 1.2 },
+      { field: 'artist', headerName: t('columnLabels.artist'), flex: 1 },
+      { field: 'displayTitle', headerName: t('columnLabels.displayTitle'), flex: 1 },
+      { field: 'year', headerName: t('columnLabels.year'), width: 120 },
+      { field: 'formats', headerName: t('columnLabels.formats'), flex: 1.2 },
+      { field: 'labels', headerName: t('columnLabels.labels'), flex: 1.2 },
+      { field: 'genres', headerName: t('columnLabels.genres'), flex: 1 },
+      { field: 'styles', headerName: t('columnLabels.styles'), flex: 1.2 },
       {
         field: 'lowestPrice',
-        headerName: 'Lowest Price',
+        headerName: t('lowestPrice'),
         width: 140,
         sortComparator: (v1, v2) => (v1 ?? Number.POSITIVE_INFINITY) - (v2 ?? Number.POSITIVE_INFINITY),
         renderCell: (params) => {
@@ -99,7 +102,7 @@ export function CollectionDataGrid({
           const isFetching = fetchingReleaseIds.has(row.id);
 
           if (value != null) {
-            return formatPrice(value);
+            return formatPrice(value, locale);
           }
 
           if (row.releaseDetailsLoaded) {
@@ -107,11 +110,11 @@ export function CollectionDataGrid({
           }
 
           return (
-            <Tooltip title="Fetch release details">
+            <Tooltip title={t('fetchReleaseDetails')}>
               <span>
                 <IconButton
                   size="small"
-                  aria-label="Fetch release details"
+                  aria-label={t('fetchReleaseDetails')}
                   disabled={isFetching}
                   onClick={(event) => {
                     event.stopPropagation();
@@ -127,13 +130,13 @@ export function CollectionDataGrid({
       },
       {
         field: 'dateAdded',
-        headerName: 'Added',
+        headerName: t('added'),
         width: 180,
-        valueFormatter: (value) => formatDiscogsDate((value as string) ?? ''),
+        valueFormatter: (value) => formatDiscogsDate((value as string) ?? '', locale),
       },
       {
         field: 'rating',
-        headerName: 'Rating',
+        headerName: t('rating'),
         width: 150,
         sortComparator: (v1, v2) => (v1 ?? -1) - (v2 ?? -1),
         renderCell: (params) => {
@@ -154,7 +157,7 @@ export function CollectionDataGrid({
         },
       },
     ],
-    [fetchingReleaseIds, handleFetchReleaseDetails, renderRatingCell]
+    [fetchingReleaseIds, handleFetchReleaseDetails, locale, renderRatingCell, t]
   );
 
   const mergedColumnVisibility = useMemo(

@@ -35,8 +35,11 @@ export function formatEta(totalSeconds: number) {
   return `${mm}:${ss}`;
 }
 
-export function formatPrice(value: number | null) {
+export function formatPrice(value: number | null, locale = DEFAULT_LOCALE) {
   if (value == null) return null;
 
-  return `$${value.toFixed(2)}`;
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: 'USD',
+  }).format(value);
 }

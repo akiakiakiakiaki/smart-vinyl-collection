@@ -5,6 +5,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import CloseIcon from '@mui/icons-material/Close';
 import SyncIcon from '@mui/icons-material/Sync';
 import { formatEta } from '@/lib/formatUtils';
+import { useTranslations } from 'next-intl';
 
 type Props = {
   isRefreshing: boolean;
@@ -27,8 +28,8 @@ export function RatingSyncButton({
   total,
   etaSeconds,
 }: Props) {
+  const t = useTranslations('collection');
   const etaText = formatEta(etaSeconds);
-  const progressText = total > 0 ? ` (${fetched}/${total}, ${etaText})` : '';
 
   return (
     <Button
@@ -56,7 +57,11 @@ export function RatingSyncButton({
         }),
       }}
     >
-      {isRefreshing ? `Cancel Refresh Ratings${progressText}` : 'Refresh Ratings'}
+      {isRefreshing
+        ? total > 0
+          ? t('cancelRefreshRatings', { fetched, total, eta: etaText })
+          : t('cancelRefreshRatingsSimple')
+        : t('refreshRatings')}
     </Button>
   );
 }

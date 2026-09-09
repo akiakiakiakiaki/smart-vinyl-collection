@@ -11,8 +11,10 @@ import { RatingSyncButton } from '@/components/collection/RatingSyncButton';
 import { FolderSelect } from '@/components/collection/FolderSelect';
 import { useState } from 'react';
 import { ColumnPopover } from '@/components/collection/ColumnPopover';
+import { useTranslations } from 'next-intl';
 
 export function CollectionToolbar() {
+  const t = useTranslations('collection');
   const {
     selectedFolder,
     setSelectedFolder,
@@ -76,7 +78,7 @@ export function CollectionToolbar() {
         onClick={handleRefresh}
         disabled={!canRefresh}
       >
-        Refresh Releases
+        {t('refreshReleases')}
       </Button>
 
       <RatingSyncButton
@@ -91,7 +93,7 @@ export function CollectionToolbar() {
       />
 
       <div className="ml-auto flex items-center gap-2">
-        <Tooltip title="Show or hide columns">
+          <Tooltip title={t('showOrHideColumns')}>
           <Button
             variant={isDefaultColumnLayout ? 'outlined' : 'contained'}
             color={isDefaultColumnLayout ? 'secondary' : 'info'}

@@ -1,9 +1,11 @@
 'use client';
 import { Box, Button, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function Page() {
   const router = useRouter();
+  const t = useTranslations('home');
 
   const handleVisitCollections = () => {
     router.push('/collection/overview');
@@ -15,9 +17,9 @@ export default function Page() {
           variant="h5"
           className="pb-3"
         >
-          Welcome
+          {t('welcome')}
         </Typography>
-        <Typography className="pb-5">This will be a fancy dashboard or something later</Typography>
+        <Typography className="pb-5">{t('description')}</Typography>
       </div>
       <div className="flex flex-col items-center grow justify-center">
         <Button
@@ -25,7 +27,7 @@ export default function Page() {
           variant="contained"
           onClick={handleVisitCollections}
         >
-          Explore your Collections
+          {t('exploreCollections')}
         </Button>
       </div>
     </div>

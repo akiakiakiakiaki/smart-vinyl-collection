@@ -1,0 +1,78 @@
+{
+  "common": {
+    "loginWithDiscogs": "Login with Discogs",
+    "logout": "Logout",
+    "loading": "Loading...",
+    "error": "Error",
+    "unknownError": "Unknown error"
+  },
+  "home": {
+    "welcome": "Welcome",
+    "description": "This will be a fancy dashboard or something later",
+    "exploreCollections": "Explore your Collections"
+  },
+  "collection": {
+    "refreshReleases": "Refresh Releases",
+    "refreshRatings": "Refresh Ratings",
+    "cancelRefreshRatings": "Cancel Refresh Ratings ({fetched}/{total}, {eta})",
+    "cancelRefreshRatingsSimple": "Cancel Refresh Ratings",
+    "selectFolder": "Select folder",
+    "folderLabel": "Collection folder",
+    "columns": "Columns",
+    "showOrHideColumns": "Show or hide columns",
+    "resetColumns": "Reset",
+    "fetchReleaseDetails": "Fetch release details",
+    "cover": "cover",
+    "added": "Added",
+    "lowestPrice": "Lowest Price",
+    "rating": "Rating",
+    "collectionError": "Error",
+    "noRecords": "No records found",
+    "overviewTitle": "Collection overview",
+    "columnLabels": {
+      "cover": "Cover",
+      "artist": "Artist",
+      "displayTitle": "Title",
+      "year": "Year",
+      "formats": "Formats",
+      "labels": "Labels",
+      "genres": "Genres",
+      "styles": "Styles",
+      "lowestPrice": "Lowest Price",
+      "dateAdded": "Added",
+      "rating": "Rating"
+    }
+  },
+  "release": {
+    "backToCollection": "Back to collection",
+    "refresh": "Refresh Release",
+    "refreshing": "Refreshing Release",
+    "released": "Released {date}",
+    "quality": "Quality: {value}",
+    "communityRating": "Community rating",
+    "yourRating": "Your rating",
+    "have": "Have",
+    "want": "Want",
+    "forSale": "For sale",
+    "lowestPrice": "Lowest price",
+    "noDetails": "No release details found.",
+    "formats": "Formats",
+    "genresStyles": "Genres & Styles",
+    "labels": "Labels",
+    "noLabels": "No labels listed.",
+    "companies": "Companies",
+    "credits": "Credits",
+    "tracklist": "Tracklist",
+    "position": "Position",
+    "title": "Title",
+    "artists": "Artists",
+    "duration": "Duration",
+    "identifiers": "Identifiers",
+    "notes": "Notes",
+    "videos": "Videos",
+    "noValues": "No values listed."
+  },
+  "auth": {
+    "loginTitle": "Login with Discogs"
+  }
+}

@@ -4,8 +4,10 @@ import { Button } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useUserStore } from '@/store/useUserStore';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function LogoutButton() {
+  const t = useTranslations('common');
   const router = useRouter();
   const clearUser = useUserStore((s) => s.clearUser);
   const handleLogout = async () => {
@@ -23,7 +25,7 @@ export default function LogoutButton() {
       startIcon={<LogoutIcon />}
       onClick={handleLogout}
     >
-      Logout
+      {t('logout')}
     </Button>
   );
 }

@@ -8,8 +8,10 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SyncIcon from '@mui/icons-material/Sync';
 import { useReleaseStore } from '@/store/useReleaseStore';
+import { useTranslations } from 'next-intl';
 
 export function ReleaseToolbar() {
+  const t = useTranslations('release');
   const params = useParams<{ releaseId: string }>();
   const releaseId = typeof params.releaseId === 'string' ? params.releaseId : null;
   const isRefreshing = useReleaseStore((s) => (releaseId ? Boolean(s.refreshingReleaseIds[releaseId]) : false));
@@ -33,7 +35,7 @@ export function ReleaseToolbar() {
         href="/collection/overview"
         variant="outlined"
       >
-        Back to collection
+        {t('backToCollection')}
       </Button>
 
       <Button
@@ -54,7 +56,7 @@ export function ReleaseToolbar() {
           }),
         }}
       >
-        {isRefreshing ? 'Refreshing Release' : 'Refresh Release'}
+        {isRefreshing ? t('refreshing') : t('refresh')}
       </Button>
     </Stack>
   );

@@ -10,6 +10,10 @@ describe('formatUtils', () => {
     expect(formatDiscogsDate('2026-01-02T12:00:00Z', 'de-DE')).toBe('2. Jan. 2026');
   });
 
+  it('formats a Discogs date for the es-ES locale', () => {
+    expect(formatDiscogsDate('2026-01-02T12:00:00Z', 'es-ES')).toBe('2 ene 2026');
+  });
+
   it('returns the original value for an invalid date', () => {
     expect(formatDiscogsDate('not-a-date')).toBe('not-a-date');
   });
@@ -22,5 +26,9 @@ describe('formatUtils', () => {
   it('formats nullable prices', () => {
     expect(formatPrice(12.5)).toBe('$12.50');
     expect(formatPrice(null)).toBeNull();
+  });
+
+  it('formats prices for the es-ES locale', () => {
+    expect(formatPrice(12.5, 'es-ES')).toBe('12,50 US$');
   });
 });

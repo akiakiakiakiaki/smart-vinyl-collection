@@ -2,8 +2,10 @@
 
 import { Button } from '@mui/material';
 import LoginIcon from '@mui/icons-material/Login';
+import { useTranslations } from 'next-intl';
 
 export default function LoginButton() {
+  const t = useTranslations('common');
   const handleLogin = async () => {
     window.location.href = '/api/discogs/auth/start';
   };
@@ -15,7 +17,7 @@ export default function LoginButton() {
       startIcon={<LoginIcon />}
       onClick={handleLogin}
     >
-      Login with Discogs
+      {t('loginWithDiscogs')}
     </Button>
   );
 }
