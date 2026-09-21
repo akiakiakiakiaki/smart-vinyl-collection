@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { useCollectionStore } from '@/store/useCollectionStore';
 import { useReleaseStore } from '@/store/useReleaseStore';
 import { useUserStore } from '@/store/useUserStore';
+import { useColorModeStore } from '@/store/useColorModeStore';
 
 beforeEach(() => {
   useCollectionStore.setState({
@@ -18,6 +19,7 @@ beforeEach(() => {
   });
   useReleaseStore.setState({ refreshVersions: {}, refreshingReleaseIds: {} });
   useUserStore.setState({ user: null });
+  useColorModeStore.setState({ mode: 'system' });
 });
 
 describe('collection store', () => {
@@ -71,5 +73,17 @@ describe('release and user stores', () => {
 
     useUserStore.getState().clearUser();
     expect(useUserStore.getState().user).toBeNull();
+  });
+});
+
+describe('color mode store', () => {
+  it('defaults to the browser system preference and supports explicit modes', () => {
+    expect(useColorModeStore.getState().mode).toBe('system');
+
+    useColorModeStore.getState().setMode('dark');
+    expect(useColorModeStore.getState().mode).toBe('dark');
+
+    useColorModeStore.getState().resetMode();
+    expect(useColorModeStore.getState().mode).toBe('system');
   });
 });

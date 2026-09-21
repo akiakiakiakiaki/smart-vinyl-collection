@@ -3,6 +3,7 @@ import './globals.css';
 import Providers from './providers';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale } from 'next-intl/server';
+import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -17,8 +18,9 @@ export default async function RootLayout({
   const locale = await getLocale();
 
   return (
-    <html lang={locale}>
+    <html lang={locale} suppressHydrationWarning>
       <body>
+        <InitColorSchemeScript attribute="data" defaultMode="system" />
         <NextIntlClientProvider>
           <Providers>{children}</Providers>
         </NextIntlClientProvider>

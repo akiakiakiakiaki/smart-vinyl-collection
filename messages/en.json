@@ -74,5 +74,9 @@
   },
   "auth": {
     "loginTitle": "Login with Discogs"
+  },
+  "theme": {
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode"
   }
 }

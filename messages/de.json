@@ -74,5 +74,9 @@
   },
   "auth": {
     "loginTitle": "Mit Discogs anmelden"
+  },
+  "theme": {
+    "switchToLight": "Helles Design aktivieren",
+    "switchToDark": "Dunkles Design aktivieren"
   }
 }

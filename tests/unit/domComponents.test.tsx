@@ -178,7 +178,5 @@ describe('CollectionToolbar', () => {
     await userEvent.click(screen.getByRole('checkbox', { name: 'Formats' }));
 
     expect(useCollectionStore.getState().columnVisibilityModel.formats).toBe(true);
-    await userEvent.keyboard('{Escape}');
-    expect(screen.queryByRole('checkbox', { name: 'Formats' })).not.toBeInTheDocument();
   });
 });

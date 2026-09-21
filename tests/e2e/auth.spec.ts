@@ -29,4 +29,85 @@ test.describe('authentication', () => {
     await expect(page.getByRole('button', { name: 'Explorar tus colecciones' })).toBeVisible();
     await context.close();
   });
+
+  test('uses the browser dark preference by default', async ({ browser }) => {
+    const context = await browser.newContext({ colorScheme: 'dark' });
+    const page = await context.newPage();
+
+    await page.goto('/');
+
+    await expect(page.getByRole('button', { name: 'Switch to light mode' })).toBeVisible();
+    await expect(page.locator('html')).toHaveAttribute('data-dark', '');
+    await context.close();
+  });
+
+  test('switches repeatedly between light and dark mode', async ({ browser }) => {
+    const context = await browser.newContext({ colorScheme: 'light' });
+    const page = await context.newPage();
+
+    await page.goto('/');
+
+    const darkModeButton = page.getByRole('button', { name: 'Switch to dark mode' });
+    await expect(darkModeButton).toBeVisible();
+    await expect(page.locator('html')).toHaveAttribute('data-light', '');
+
+    await darkModeButton.click();
+    await expect(page.getByRole('button', { name: 'Switch to light mode' })).toBeVisible();
+    await expect(page.locator('html')).toHaveAttribute('data-dark', '');
+
+    const lightModeButton = page.getByRole('button', { name: 'Switch to light mode' });
+    await lightModeButton.click();
+    await expect(page.getByRole('button', { name: 'Switch to dark mode' })).toBeVisible();
+    await expect(page.locator('html')).toHaveAttribute('data-light', '');
+
+    await page.getByRole('button', { name: 'Switch to dark mode' }).click();
+    await expect(page.getByRole('button', { name: 'Switch to light mode' })).toBeVisible();
+    await expect(page.locator('html')).toHaveAttribute('data-dark', '');
+    await context.close();
+  });
+
+  test('persists the selected color mode after a reload', async ({ browser }) => {
+    const context = await browser.newContext({ colorScheme: 'light' });
+    const page = await context.newPage();
+
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Switch to dark mode' }).click();
+    await expect(page.getByRole('button', { name: 'Switch to light mode' })).toBeVisible();
+
+    await page.reload();
+
+    await expect(page.getByRole('button', { name: 'Switch to light mode' })).toBeVisible();
+    await expect(page.locator('html')).toHaveAttribute('data-dark', '');
+    await context.close();
+  });
+
+  test('follows system color preference changes while in system mode', async ({ browser }) => {
+    const context = await browser.newContext({ colorScheme: 'light' });
+    const page = await context.newPage();
+
+    await page.goto('/');
+    await expect(page.getByRole('button', { name: 'Switch to dark mode' })).toBeVisible();
+
+    await page.emulateMedia({ colorScheme: 'dark' });
+
+    await expect(page.getByRole('button', { name: 'Switch to light mode' })).toBeVisible();
+    await expect(page.locator('html')).toHaveAttribute('data-dark', '');
+    await context.close();
+  });
+
+  test('can be operated with the keyboard', async ({ browser }) => {
+    const context = await browser.newContext({ colorScheme: 'light' });
+    const page = await context.newPage();
+
+    await page.goto('/');
+    const darkModeButton = page.getByRole('button', { name: 'Switch to dark mode' });
+    await darkModeButton.focus();
+    await expect(darkModeButton).toBeFocused();
+    await page.keyboard.press('Enter');
+
+    const lightModeButton = page.getByRole('button', { name: 'Switch to light mode' });
+    await expect(lightModeButton).toBeVisible();
+    await expect(lightModeButton).toBeFocused();
+    await context.close();
+  });
 });

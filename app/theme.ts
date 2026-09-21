@@ -3,41 +3,52 @@
 import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
-  palette: {
-    primary: { main: '#0d47a1' },
-    secondary: { main: '#4a148c' },
+  cssVariables: { colorSchemeSelector: 'data' },
+  colorSchemes: {
+    light: {
+      palette: {
+        primary: { main: '#0d47a1' },
+        secondary: { main: '#4a148c' },
+      },
+    },
+    dark: {
+      palette: {
+        primary: { main: '#90caf9' },
+        secondary: { main: '#ce93d8' },
+      },
+    },
   },
   components: {
     MuiButton: {
       styleOverrides: {
-        contained: {
+        contained: ({ theme }) => ({
           '&.MuiButton-colorPrimary': {
-            color: '#ffffff',
-            backgroundColor: '#0d47a1',
+            color: theme.palette.primary.contrastText,
+            backgroundColor: theme.palette.primary.main,
           },
           '&.MuiButton-colorPrimary:hover': {
-            backgroundColor: '#093579',
+            backgroundColor: theme.palette.primary.dark,
           },
           '&.MuiButton-colorPrimary.Mui-disabled': {
-            color: '#ffffff',
-            backgroundColor: '#0d47a1',
-            opacity: 1,
+            color: theme.palette.primary.contrastText,
+            backgroundColor: theme.palette.primary.main,
+            opacity: 0.5,
             cursor: 'not-allowed',
           },
           '&.MuiButton-colorSecondary': {
-            color: '#ffffff',
-            backgroundColor: '#4a148c',
+            color: theme.palette.secondary.contrastText,
+            backgroundColor: theme.palette.secondary.main,
           },
           '&.MuiButton-colorSecondary:hover': {
-            backgroundColor: '#300d5c',
+            backgroundColor: theme.palette.secondary.dark,
           },
           '&.MuiButton-colorSecondary.Mui-disabled': {
-            color: '#ffffff',
-            backgroundColor: '#4a148c',
-            opacity: 1,
+            color: theme.palette.secondary.contrastText,
+            backgroundColor: theme.palette.secondary.main,
+            opacity: 0.5,
             cursor: 'not-allowed',
           },
-        },
+        }),
       },
     },
   },

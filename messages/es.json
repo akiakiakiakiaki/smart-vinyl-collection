@@ -74,5 +74,9 @@
   },
   "auth": {
     "loginTitle": "Iniciar sesión con Discogs"
+  },
+  "theme": {
+    "switchToLight": "Activar modo claro",
+    "switchToDark": "Activar modo oscuro"
   }
 }
