@@ -184,6 +184,7 @@ export function CollectionDataGrid({
         onPaginationModelChange={setPaginationModel}
         sortModel={sortModel}
         onSortModelChange={setSortModel}
+        localeText={{ noRowsLabel: t('noRecords') }}
         loading={loading}
         onRowClick={(params) => {
           router.push(`/collection/releases/${params.row.id}`);

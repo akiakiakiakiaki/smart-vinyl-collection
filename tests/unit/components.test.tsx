@@ -52,7 +52,7 @@ describe('FolderSelect', () => {
     window.dispatchEvent(new Event('discogs-folders-invalidated'));
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
-    expect(onChange).toHaveBeenCalledWith('');
+    await waitFor(() => expect(onChange).toHaveBeenCalledWith(''));
   });
 });
 

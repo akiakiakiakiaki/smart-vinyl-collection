@@ -12,7 +12,7 @@ type Props = {
 
 export function FolderSelect({ selectedFolder, onChange }: Props) {
   const t = useTranslations('collection');
-  const [folders, setFolders] = useState<DiscogsFolder[]>([]);
+  const [folders, setFolders] = useState<DiscogsFolder[] | null>(null);
 
   useEffect(() => {
     const fetchFolders = async () => {
@@ -35,12 +35,13 @@ export function FolderSelect({ selectedFolder, onChange }: Props) {
   }, []);
 
   useEffect(() => {
+    if (!folders) return;
     if (selectedFolder && !folders.some((folder) => folder.name === selectedFolder)) {
       onChange('');
     }
   }, [folders, onChange, selectedFolder]);
 
-  const selectedFolderExists = folders.some((folder) => folder.name === selectedFolder);
+  const selectedFolderExists = folders?.some((folder) => folder.name === selectedFolder) ?? false;
   const selectValue = selectedFolderExists ? selectedFolder : '';
 
   return (
@@ -57,7 +58,7 @@ export function FolderSelect({ selectedFolder, onChange }: Props) {
       }}
       className="py-0 my-0"
     >
-      {folders.map((f) => (
+      {(folders ?? []).map((f) => (
         <MenuItem
           key={f.id}
           value={f.name}

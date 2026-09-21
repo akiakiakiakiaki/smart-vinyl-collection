@@ -1,4 +1,4 @@
-import { mockCollectionApi } from './apiMocks';
+import { mockCollectionApi, mockReleaseApi } from './apiMocks';
 import { test, expect } from './fixtures';
 
 test.describe('collection', () => {
@@ -14,6 +14,25 @@ test.describe('collection', () => {
     await expect(authenticatedPage.getByText('Test Album')).toBeVisible();
     await authenticatedPage.getByText('Test Album').click();
     await expect(authenticatedPage).toHaveURL(/\/collection\/releases\/100$/);
+  });
+
+  test('restores the selected folder and collection after returning from release details', async ({ authenticatedPage }) => {
+    await mockCollectionApi(authenticatedPage);
+    await mockReleaseApi(authenticatedPage);
+
+    await authenticatedPage.goto('/collection/overview');
+    await authenticatedPage.getByLabel('Collection folder').click();
+    await authenticatedPage.getByRole('option', { name: 'CR' }).click();
+    await expect(authenticatedPage.getByText('Test Album')).toBeVisible();
+
+    for (let index = 0; index < 2; index += 1) {
+      await authenticatedPage.getByText('Test Album').click();
+      await expect(authenticatedPage).toHaveURL(/\/collection\/releases\/100$/);
+      await authenticatedPage.getByRole('link', { name: 'Back to collection' }).click();
+      await expect(authenticatedPage).toHaveURL(/\/collection\/overview$/);
+      await expect(authenticatedPage.getByLabel('Collection folder')).toHaveText('CR');
+      await expect(authenticatedPage.getByText('Test Album')).toBeVisible();
+    }
   });
 
   test('shows an empty state for a folder without releases', async ({ authenticatedPage }) => {

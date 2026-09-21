@@ -27,8 +27,6 @@ export default function CollectionOverview() {
   return (
     <div className="h-full">
       <h1 className="sr-only">{t('overviewTitle')}</h1>
-      {selectedFolder && rows.length === 0 && !loading && <p>{t('noRecords')}</p>}
-
       <div className="h-full">
         <CollectionDataGrid
           rows={rows}

@@ -30,6 +30,7 @@ vi.mock('@mui/x-data-grid', async () => {
     onRowClick: (params: { row: CollectionOverviewRow }) => void;
     onPaginationModelChange: (model: { page: number; pageSize: number }) => void;
     onSortModelChange: (model: GridSortModel) => void;
+    localeText?: { noRowsLabel?: string };
   };
 
   function MockDataGrid({
@@ -41,6 +42,7 @@ vi.mock('@mui/x-data-grid', async () => {
     onRowClick,
     onPaginationModelChange,
     onSortModelChange,
+    localeText,
   }: MockDataGridProps) {
     const visibleColumns = columns.filter((column) => columnVisibilityModel[column.field] !== false);
 
@@ -77,6 +79,7 @@ vi.mock('@mui/x-data-grid', async () => {
             })}
           </div>
         ))}
+        {rows.length === 0 && <div data-testid="no-rows-label">{localeText?.noRowsLabel}</div>}
         <button type="button" onClick={() => onPaginationModelChange({ page: 1, pageSize: 10 })}>
           Change page
         </button>
@@ -322,6 +325,20 @@ describe('CollectionDataGrid', () => {
 
     expect(useCollectionStore.getState().paginationModel).toEqual({ page: 1, pageSize: 10 });
     expect(useCollectionStore.getState().sortModel).toEqual([{ field: 'year', sort: 'desc' }]);
+  });
+
+  it('passes the translated empty-state label to the data grid', () => {
+    render(
+      <CollectionDataGrid
+        rows={[]}
+        loading={false}
+        selectedFolder="CR"
+        columnVisibilityModel={visibleColumns}
+        onFetchReleaseDetails={vi.fn()}
+      />
+    );
+
+    expect(screen.getByTestId('no-rows-label')).toHaveTextContent('No records found');
   });
 
   it('uses a fallback id when a row has no instance id', () => {
