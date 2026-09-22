@@ -2,15 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import { Select, MenuItem } from '@mui/material';
+import type { SxProps, Theme } from '@mui/material/styles';
 import { DiscogsFolder } from '@/types/discogs';
 import { useTranslations } from 'next-intl';
 
 type Props = {
   selectedFolder: string | null;
   onChange: (folder: string) => void;
+  sx?: SxProps<Theme>;
 };
 
-export function FolderSelect({ selectedFolder, onChange }: Props) {
+export function FolderSelect({ selectedFolder, onChange, sx }: Props) {
   const t = useTranslations('collection');
   const [folders, setFolders] = useState<DiscogsFolder[] | null>(null);
 
@@ -56,7 +58,7 @@ export function FolderSelect({ selectedFolder, onChange }: Props) {
         if (!value) return;
         onChange(value);
       }}
-      className="py-0 my-0"
+      sx={[{ py: 0, my: 0 }, ...(Array.isArray(sx) ? sx : sx ? [sx] : [])]}
     >
       {(folders ?? []).map((f) => (
         <MenuItem

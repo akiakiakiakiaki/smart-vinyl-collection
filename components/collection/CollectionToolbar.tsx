@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Tooltip, Chip } from '@mui/material';
+import { Box, Button, Chip, Stack, Tooltip } from '@mui/material';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import RefreshIcon from '@mui/icons-material/Refresh';
 
@@ -65,41 +65,69 @@ export function CollectionToolbar() {
     setColumnVisibility(field, !effectiveColumnVisibilityModel[field]);
   };
 
+  const mobileButtonSx = {
+    flex: 1,
+    minWidth: 0,
+    fontSize: { xs: '0.75rem', sm: '0.875rem' },
+    px: { xs: 1, sm: 2 },
+    whiteSpace: 'nowrap',
+  };
+
   return (
-    <header className="mb-4 flex items-center gap-2">
-      <FolderSelect
-        selectedFolder={selectedFolder}
-        onChange={setSelectedFolder}
-      />
+    <Stack
+      component="header"
+      direction={{ xs: 'column', md: 'row' }}
+      spacing={{ xs: 1, md: 2 }}
+      sx={{ mb: 2, alignItems: { xs: 'stretch', md: 'center' } }}
+    >
+      <Box sx={{ width: { xs: '100%', md: 'auto' } }}>
+        <FolderSelect
+          selectedFolder={selectedFolder}
+          onChange={setSelectedFolder}
+          sx={{ width: '100%', minWidth: { md: 180 } }}
+        />
+      </Box>
 
-      <Button
-        variant="contained"
-        startIcon={<RefreshIcon />}
-        onClick={handleRefresh}
-        disabled={!canRefresh}
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        spacing={1}
+        sx={{ width: { xs: '100%', md: 'auto' }, alignItems: { xs: 'stretch', sm: 'center' } }}
       >
-        {t('refreshReleases')}
-      </Button>
+        <Button
+          variant="contained"
+          startIcon={<RefreshIcon />}
+          onClick={handleRefresh}
+          disabled={!canRefresh}
+          sx={mobileButtonSx}
+        >
+          {t('refreshReleases')}
+        </Button>
 
-      <RatingSyncButton
-        isRefreshing={isRefreshing}
-        isLoading={isLoading}
-        selectedFolder={selectedFolder}
-        onStart={handleRefreshRatings}
-        onCancel={cancelRefresh}
-        fetched={ratingSyncFetched}
-        total={ratingSyncTotal}
-        etaSeconds={ratingSyncEtaSeconds}
-      />
+        <RatingSyncButton
+          isRefreshing={isRefreshing}
+          isLoading={isLoading}
+          selectedFolder={selectedFolder}
+          onStart={handleRefreshRatings}
+          onCancel={cancelRefresh}
+          fetched={ratingSyncFetched}
+          total={ratingSyncTotal}
+          etaSeconds={ratingSyncEtaSeconds}
+          sx={mobileButtonSx}
+        />
+      </Stack>
 
-      <div className="ml-auto flex items-center gap-2">
-          <Tooltip title={t('showOrHideColumns')}>
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{ ml: { xs: 0, md: 'auto' }, width: { xs: '100%', md: 'auto' }, alignItems: 'center' }}
+      >
+        <Tooltip title={t('showOrHideColumns')}>
           <Button
             variant={isDefaultColumnLayout ? 'outlined' : 'contained'}
             color={isDefaultColumnLayout ? 'secondary' : 'info'}
             startIcon={<ViewColumnIcon />}
             onClick={(event) => setColumnAnchorEl(event.currentTarget)}
-            sx={{ minWidth: 150 }}
+            sx={{ minWidth: { xs: 0, sm: 150 }, flex: { xs: 1, md: 'initial' } }}
           >
             Columns
           </Button>
@@ -110,7 +138,7 @@ export function CollectionToolbar() {
           label={`${visibleColumnCount}/${COLLECTION_COLUMN_OPTIONS.length}`}
           color={isDefaultColumnLayout ? 'default' : 'info'}
         />
-      </div>
+      </Stack>
 
       <ColumnPopover
         open={columnsOpen}
@@ -120,6 +148,6 @@ export function CollectionToolbar() {
         onToggle={handleToggleColumn}
         onReset={resetColumnVisibility}
       />
-    </header>
+    </Stack>
   );
 }

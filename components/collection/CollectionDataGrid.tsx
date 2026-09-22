@@ -8,6 +8,7 @@ import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import IconButton from '@mui/material/IconButton';
 import Rating from '@mui/material/Rating';
 import Tooltip from '@mui/material/Tooltip';
+import Box from '@mui/material/Box';
 
 import { useCollectionStore } from '@/store/useCollectionStore';
 
@@ -81,20 +82,22 @@ export function CollectionDataGrid({
         field: 'cover',
         headerName: t('columnLabels.cover'),
         width: 100,
+        minWidth: 90,
         sortable: false,
         renderCell: renderRatingCell,
       },
-      { field: 'artist', headerName: t('columnLabels.artist'), flex: 1 },
-      { field: 'displayTitle', headerName: t('columnLabels.displayTitle'), flex: 1 },
-      { field: 'year', headerName: t('columnLabels.year'), width: 120 },
-      { field: 'formats', headerName: t('columnLabels.formats'), flex: 1.2 },
-      { field: 'labels', headerName: t('columnLabels.labels'), flex: 1.2 },
-      { field: 'genres', headerName: t('columnLabels.genres'), flex: 1 },
-      { field: 'styles', headerName: t('columnLabels.styles'), flex: 1.2 },
+      { field: 'artist', headerName: t('columnLabels.artist'), minWidth: 180, flex: 1 },
+      { field: 'displayTitle', headerName: t('columnLabels.displayTitle'), minWidth: 220, flex: 1.5 },
+      { field: 'year', headerName: t('columnLabels.year'), width: 100, minWidth: 90 },
+      { field: 'formats', headerName: t('columnLabels.formats'), minWidth: 180, flex: 1 },
+      { field: 'labels', headerName: t('columnLabels.labels'), minWidth: 180, flex: 1 },
+      { field: 'genres', headerName: t('columnLabels.genres'), minWidth: 140, flex: 1 },
+      { field: 'styles', headerName: t('columnLabels.styles'), minWidth: 140, flex: 1 },
       {
         field: 'lowestPrice',
         headerName: t('lowestPrice'),
         width: 140,
+        minWidth: 140,
         sortComparator: (v1, v2) => (v1 ?? Number.POSITIVE_INFINITY) - (v2 ?? Number.POSITIVE_INFINITY),
         renderCell: (params) => {
           const value = params.value as number | null | undefined;
@@ -132,12 +135,14 @@ export function CollectionDataGrid({
         field: 'dateAdded',
         headerName: t('added'),
         width: 180,
+        minWidth: 180,
         valueFormatter: (value) => formatDiscogsDate((value as string) ?? '', locale),
       },
       {
         field: 'rating',
         headerName: t('rating'),
         width: 150,
+        minWidth: 150,
         sortComparator: (v1, v2) => (v1 ?? -1) - (v2 ?? -1),
         renderCell: (params) => {
           const value = params.value as number | null | undefined;
@@ -173,7 +178,7 @@ export function CollectionDataGrid({
   }
 
   return (
-    <div style={{ height: '100%', width: '100%' }}>
+    <Box data-testid="collection-grid-container" sx={{ height: '100%', width: '100%', minWidth: 0 }}>
       <DataGrid
         rows={rows}
         columns={columns}
@@ -190,11 +195,12 @@ export function CollectionDataGrid({
           router.push(`/collection/releases/${params.row.id}`);
         }}
         sx={{
+          minWidth: 0,
           '& .MuiDataGrid-row': {
             cursor: 'pointer',
           },
         }}
       />
-    </div>
+    </Box>
   );
 }

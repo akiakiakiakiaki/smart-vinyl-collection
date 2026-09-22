@@ -1,5 +1,5 @@
 'use client';
-import { Box, Button, Typography } from '@mui/material';
+import { Button, Stack, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
@@ -11,17 +11,17 @@ export default function Page() {
     router.push('/collection/overview');
   };
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex flex-col items-center">
+    <Stack sx={{ height: '100%' }}>
+      <Stack sx={{ alignItems: 'center' }}>
         <Typography
           variant="h5"
-          className="pb-3"
+          sx={{ pb: 1.5 }}
         >
           {t('welcome')}
         </Typography>
-        <Typography className="pb-5">{t('description')}</Typography>
-      </div>
-      <div className="flex flex-col items-center grow justify-center">
+        <Typography sx={{ pb: 2.5 }}>{t('description')}</Typography>
+      </Stack>
+      <Stack sx={{ flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Button
           color="primary"
           variant="contained"
@@ -29,7 +29,7 @@ export default function Page() {
         >
           {t('exploreCollections')}
         </Button>
-      </div>
-    </div>
+      </Stack>
+    </Stack>
   );
 }

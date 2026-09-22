@@ -78,6 +78,9 @@ export async function mockReleaseApi(page: Page) {
           formats: [{ name: 'Vinyl', qty: '1', descriptions: ['LP'] }],
           genres: ['Electronic'],
           styles: ['House'],
+          tracklist: [
+            { position: 'A1', title: 'Test Track', duration: '4:20', artists: [{ name: 'Test Artist' }] },
+          ],
         },
         userRating: 4,
       }),

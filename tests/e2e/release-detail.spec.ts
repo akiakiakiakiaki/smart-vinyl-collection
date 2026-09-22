@@ -28,4 +28,23 @@ test.describe('release details', () => {
     await authenticatedPage.getByRole('button', { name: 'Refresh Release' }).click();
     await refreshRequest;
   });
+
+  test('uses a readable responsive heading hierarchy on mobile', async ({ authenticatedPage }) => {
+    await authenticatedPage.setViewportSize({ width: 375, height: 800 });
+    await mockReleaseApi(authenticatedPage);
+    await authenticatedPage.goto('/collection/releases/100');
+
+    await expect(authenticatedPage.locator('h1')).toHaveText('Test Album');
+    await expect(authenticatedPage.getByRole('paragraph').filter({ hasText: 'Test Artist' })).toHaveAttribute(
+      'class',
+      /MuiTypography-subtitle1/
+    );
+    await expect(authenticatedPage.locator('h2').filter({ hasText: 'Test Artist' })).toHaveCount(0);
+
+    const tableContainer = authenticatedPage.getByTestId('tracklist-scroll-container');
+    await expect.poll(async () =>
+      tableContainer.evaluate((element) => element.scrollWidth > element.clientWidth)
+    ).toBe(true);
+    await expect(tableContainer).toHaveCSS('background-color', /rgb/);
+  });
 });

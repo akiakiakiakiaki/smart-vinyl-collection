@@ -30,7 +30,7 @@ export function ColumnPopover({ open, anchorEl, onClose, columnVisibilityModel, 
       }}
     >
       <Box sx={{ p: 2, minWidth: 220 }}>
-        <div className="mb-2 flex items-center justify-between">
+        <Box sx={{ mb: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <strong>{t('columns')}</strong>
           <Button
             size="small"
@@ -39,7 +39,7 @@ export function ColumnPopover({ open, anchorEl, onClose, columnVisibilityModel, 
           >
             {t('resetColumns')}
           </Button>
-        </div>
+        </Box>
 
         <FormGroup>
           {COLLECTION_COLUMN_OPTIONS.map((column) => (

@@ -12,6 +12,7 @@ import Rating from '@mui/material/Rating';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
+import TableContainer from '@mui/material/TableContainer';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
@@ -53,21 +54,21 @@ export function ReleaseDetail({
   return (
     <Stack
       spacing={3}
-      sx={{ pb: 4 }}
+      sx={{ minWidth: 0, pb: 4 }}
     >
-      <Paper sx={{ p: 3 }}>
+      <Paper sx={{ p: { xs: 2, sm: 3 } }}>
         <Stack
           direction={{ xs: 'column', md: 'row' }}
           spacing={3}
         >
-          <Box sx={{ flex: '0 0 280px' }}>
+          <Box sx={{ flex: { xs: '0 0 auto', md: '0 0 280px' }, width: { xs: '100%', md: 280 } }}>
             {primaryImage ? (
               <Box sx={{ position: 'relative', width: '100%', aspectRatio: '1 / 1', bgcolor: 'grey.100' }}>
                 <Image
                   src={primaryImage.uri}
                   alt={release.title}
                   fill
-                  sizes="280px"
+                  sizes="(max-width: 899px) 100vw, 280px"
                   style={{ objectFit: 'contain' }}
                   priority
                 />
@@ -95,10 +96,11 @@ export function ReleaseDetail({
                 {release.title}
               </Typography>
               {release.artists && (
-                <Typography
-                  variant="h2"
-                  color="text.secondary"
-                >
+              <Typography
+                variant="subtitle1"
+                component="p"
+                color="text.secondary"
+              >
                   {release.artists}
                 </Typography>
               )}
@@ -243,30 +245,35 @@ export function ReleaseDetail({
       )}
 
       <Section title={t('tracklist')}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>{t('position')}</TableCell>
-              <TableCell>{t('title')}</TableCell>
-              <TableCell>{t('artists')}</TableCell>
-              <TableCell>{t('credits')}</TableCell>
-              <TableCell align="right">{t('duration')}</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {release.tracklist.map((track, index) => (
-              <TableRow key={`${track.position}-${track.title}-${index}`}>
-                <TableCell>{track.position}</TableCell>
-                <TableCell>
-                  <Typography sx={{ fontWeight: track.type === 'heading' ? 700 : 400 }}>{track.title}</Typography>
-                </TableCell>
-                <TableCell>{track.artists}</TableCell>
-                <TableCell>{track.extraArtists}</TableCell>
-                <TableCell align="right">{track.duration}</TableCell>
+        <TableContainer
+          data-testid="tracklist-scroll-container"
+          sx={{ width: '100%', maxWidth: '100%', overflowX: 'auto', bgcolor: 'background.paper' }}
+        >
+          <Table sx={{ minWidth: 760 }} size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>{t('position')}</TableCell>
+                <TableCell>{t('title')}</TableCell>
+                <TableCell>{t('artists')}</TableCell>
+                <TableCell>{t('credits')}</TableCell>
+                <TableCell align="right">{t('duration')}</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHead>
+            <TableBody>
+              {release.tracklist.map((track, index) => (
+                <TableRow key={`${track.position}-${track.title}-${index}`}>
+                  <TableCell>{track.position}</TableCell>
+                  <TableCell>
+                    <Typography sx={{ fontWeight: track.type === 'heading' ? 700 : 400 }}>{track.title}</Typography>
+                  </TableCell>
+                  <TableCell>{track.artists}</TableCell>
+                  <TableCell>{track.extraArtists}</TableCell>
+                  <TableCell align="right">{track.duration}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Section>
 
       {release.identifiers.length > 0 && (
@@ -316,7 +323,7 @@ export function ReleaseDetail({
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <Paper sx={{ p: 3 }}>
+    <Paper sx={{ minWidth: 0, overflow: 'hidden', p: { xs: 2, sm: 3 } }}>
       <Typography
         variant="h6"
         component="h2"

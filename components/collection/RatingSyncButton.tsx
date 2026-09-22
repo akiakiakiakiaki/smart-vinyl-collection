@@ -4,6 +4,7 @@ import { Button } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import CloseIcon from '@mui/icons-material/Close';
 import SyncIcon from '@mui/icons-material/Sync';
+import type { SxProps, Theme } from '@mui/material/styles';
 import { formatEta } from '@/lib/formatUtils';
 import { useTranslations } from 'next-intl';
 
@@ -16,6 +17,7 @@ type Props = {
   fetched: number;
   total: number;
   etaSeconds: number;
+  sx?: SxProps<Theme>;
 };
 
 export function RatingSyncButton({
@@ -27,6 +29,7 @@ export function RatingSyncButton({
   fetched,
   total,
   etaSeconds,
+  sx,
 }: Props) {
   const t = useTranslations('collection');
   const etaText = formatEta(etaSeconds);
@@ -49,6 +52,7 @@ export function RatingSyncButton({
       onClick={isRefreshing ? onCancel : onStart}
       disabled={!selectedFolder || isLoading}
       sx={{
+        ...sx,
         ...(isRefreshing && {
           '@keyframes sync-spin': {
             from: { transform: 'rotate(0deg)' },

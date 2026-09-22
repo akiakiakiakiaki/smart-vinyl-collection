@@ -5,6 +5,9 @@ import { useCollectionData } from '@/hooks/collection/useCollectionData';
 import { useRatingSync } from '@/hooks/collection/useRatingSync';
 import { CollectionDataGrid } from '@/components/collection/CollectionDataGrid';
 import { useTranslations } from 'next-intl';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import visuallyHidden from '@mui/utils/visuallyHidden';
 
 export default function CollectionOverview() {
   const t = useTranslations('collection');
@@ -17,17 +20,17 @@ export default function CollectionOverview() {
 
   if (error) {
     return (
-      <div>
-        <h2>{t('collectionError')}</h2>
-        <p>{error}</p>
-      </div>
+      <Box>
+        <Typography component="h2" variant="h6">{t('collectionError')}</Typography>
+        <Typography component="p">{error}</Typography>
+      </Box>
     );
   }
 
   return (
-    <div className="h-full">
-      <h1 className="sr-only">{t('overviewTitle')}</h1>
-      <div className="h-full">
+    <Box sx={{ height: '100%', minWidth: 0 }}>
+      <Typography component="h1" sx={visuallyHidden}>{t('overviewTitle')}</Typography>
+      <Box sx={{ height: '100%', minWidth: 0 }}>
         <CollectionDataGrid
           rows={rows}
           loading={loading}
@@ -35,7 +38,7 @@ export default function CollectionOverview() {
           columnVisibilityModel={columnVisibilityModel}
           onFetchReleaseDetails={fetchReleaseDetails}
         />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

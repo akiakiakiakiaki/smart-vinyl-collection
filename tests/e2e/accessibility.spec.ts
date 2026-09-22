@@ -37,6 +37,11 @@ test.describe('accessibility', () => {
   test('login button receives keyboard focus', async ({ page }) => {
     await page.goto('/login');
 
+    const colorModeButton = page.getByRole('button', { name: 'Switch to dark mode' });
+    await expect(colorModeButton).toBeVisible();
+    await colorModeButton.focus();
+    await expect(colorModeButton).toBeFocused();
+
     await page.keyboard.press('Tab');
 
     await expect(page.getByRole('button', { name: 'Login with Discogs' })).toBeFocused();

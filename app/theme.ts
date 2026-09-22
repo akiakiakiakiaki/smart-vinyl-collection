@@ -1,9 +1,44 @@
 'use client';
 
 import { createTheme } from '@mui/material/styles';
+import { APP_BREAKPOINTS } from './breakpoints';
 
 const theme = createTheme({
+  breakpoints: {
+    values: APP_BREAKPOINTS,
+  },
   cssVariables: { colorSchemeSelector: 'data' },
+  typography: {
+    h1: {
+      fontSize: '2rem',
+      lineHeight: 1.15,
+      [`@media (min-width: ${APP_BREAKPOINTS.md}px)`]: {
+        fontSize: '2.75rem',
+      },
+    },
+    h2: {
+      fontSize: '1.5rem',
+      lineHeight: 1.25,
+      [`@media (min-width: ${APP_BREAKPOINTS.md}px)`]: {
+        fontSize: '2rem',
+      },
+    },
+    h4: {
+      fontSize: '1.5rem',
+      lineHeight: 1.2,
+      [`@media (min-width: ${APP_BREAKPOINTS.md}px)`]: {
+        fontSize: '2.125rem',
+      },
+    },
+    h6: {
+      fontSize: '1.125rem',
+      lineHeight: 1.3,
+    },
+    subtitle1: {
+      fontSize: '1.125rem',
+      lineHeight: 1.4,
+    },
+  },
   colorSchemes: {
     light: {
       palette: {

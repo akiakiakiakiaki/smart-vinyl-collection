@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import './globals.css';
 import Providers from './providers';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale } from 'next-intl/server';

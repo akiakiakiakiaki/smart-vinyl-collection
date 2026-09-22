@@ -1,12 +1,14 @@
 'use client';
 
 import { CollectionToolbar } from '@/components/collection/CollectionToolbar';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 
 export default function CollectionLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col h-full p-5">
+    <Stack sx={{ height: '100%', p: 2.5, minWidth: 0 }}>
       <CollectionToolbar />
-      <div className="flex-1 overflow-hidden">{children}</div>
-    </div>
+      <Box sx={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>{children}</Box>
+    </Stack>
   );
 }
