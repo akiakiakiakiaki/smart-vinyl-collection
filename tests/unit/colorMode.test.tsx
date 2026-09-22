@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { ReactNode } from 'react';
 import ColorModeSwitch from '@/components/ColorModeSwitch';
 import { useColorModeStore } from '@/store/useColorModeStore';
 
@@ -15,17 +16,23 @@ vi.mock('@mui/material/styles', async () => {
   };
 });
 
+vi.mock('@mui/material/Tooltip', () => ({
+  default: ({ children }: { children: ReactNode }) => children,
+}));
+
 afterEach(() => {
+  cleanup();
   setModeMock.mockReset();
   useColorModeStore.setState({ mode: 'system' });
 });
 
 describe('ColorModeSwitch', () => {
   it('switches from dark mode to light mode and updates the store', async () => {
+    const user = userEvent.setup();
     render(<ColorModeSwitch />);
 
     const switchButton = screen.getByRole('button', { name: 'Switch to light mode' });
-    await userEvent.click(switchButton);
+    await user.click(switchButton);
 
     expect(setModeMock).toHaveBeenCalledWith('light');
     expect(useColorModeStore.getState().mode).toBe('light');
