@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { Avatar, Box, Typography } from '@mui/material';
 import { useUserStore } from '@/store/useUserStore';
 
