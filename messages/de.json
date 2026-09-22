@@ -70,7 +70,13 @@
     "identifiers": "Kennungen",
     "notes": "Notizen",
     "videos": "Videos",
-    "noValues": "Keine Werte angegeben."
+    "noValues": "Keine Werte angegeben.",
+    "youtube": "YouTube",
+    "youtubeLoading": "YouTube wird durchsucht …",
+    "youtubeNotFound": "Für dieses Release wurde kein verlässlicher YouTube-Treffer gefunden.",
+    "youtubeUnavailable": "Die YouTube-Suche ist derzeit nicht verfügbar.",
+    "youtubeSearch": "YouTube manuell durchsuchen",
+    "youtubePlayerTitle": "YouTube-Player für {title}"
   },
   "auth": {
     "loginTitle": "Mit Discogs anmelden"

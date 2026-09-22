@@ -70,7 +70,13 @@
     "identifiers": "Identificadores",
     "notes": "Notas",
     "videos": "Vídeos",
-    "noValues": "No hay valores disponibles."
+    "noValues": "No hay valores disponibles.",
+    "youtube": "YouTube",
+    "youtubeLoading": "Buscando en YouTube…",
+    "youtubeNotFound": "No se encontró una coincidencia fiable en YouTube para este lanzamiento.",
+    "youtubeUnavailable": "La búsqueda de YouTube no está disponible actualmente.",
+    "youtubeSearch": "Buscar manualmente en YouTube",
+    "youtubePlayerTitle": "Reproductor de YouTube para {title}"
   },
   "auth": {
     "loginTitle": "Iniciar sesión con Discogs"

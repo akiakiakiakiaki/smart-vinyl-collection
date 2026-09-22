@@ -70,7 +70,13 @@
     "identifiers": "Identifiers",
     "notes": "Notes",
     "videos": "Videos",
-    "noValues": "No values listed."
+    "noValues": "No values listed.",
+    "youtube": "YouTube",
+    "youtubeLoading": "Searching YouTube…",
+    "youtubeNotFound": "No reliable YouTube match was found for this release.",
+    "youtubeUnavailable": "YouTube search is currently unavailable.",
+    "youtubeSearch": "Search YouTube manually",
+    "youtubePlayerTitle": "YouTube player for {title}"
   },
   "auth": {
     "loginTitle": "Login with Discogs"

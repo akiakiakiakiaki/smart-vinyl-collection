@@ -20,6 +20,7 @@ import Typography from '@mui/material/Typography';
 import { ReleaseDetailSectionItem, ReleaseDetailView } from '@/types/release';
 import { formatPrice } from '@/lib/formatUtils';
 import { useLocale, useTranslations } from 'next-intl';
+import { YouTubePlayer } from '@/components/releases/YouTubePlayer';
 
 export function ReleaseDetail({
   release,
@@ -209,6 +210,10 @@ export function ReleaseDetail({
           </Stack>
         </Stack>
       </Paper>
+
+      <Section title={t('youtube')}>
+        <YouTubePlayer release={release} />
+      </Section>
 
       <Section title={t('formats')}>
         <ChipList values={release.formats} empty={t('noValues')} />
